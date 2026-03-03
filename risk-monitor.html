@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE RISK - SENTINEL AI v2.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { 
+            --gold: #f3ba2f; 
+            --bg: #05070a; 
+            --card-bg: rgba(21, 25, 30, 0.8);
+            --danger: #ff3333; 
+            --warning: #ff8800;
+            --success: #00ff88;
+            --accent: #3498db;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: #e0e0e0; 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            margin: 0; 
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Neomórfica */
+        .sidebar { 
+            width: 280px; 
+            height: 100vh; 
+            background: #0d1117; 
+            border-right: 1px solid #30363d; 
+            padding: 25px; 
+            position: fixed;
+            z-index: 100;
+        }
+
+        .main-content { 
+            margin-left: 310px; 
+            padding: 40px; 
+            width: calc(100% - 350px); 
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Alertas Dinâmicos */
+        .alert-box { 
+            background: linear-gradient(90deg, rgba(255, 51, 51, 0.15), rgba(5, 7, 10, 0.8));
+            border-left: 4px solid var(--danger);
+            padding: 20px; 
+            border-radius: 4px; 
+            margin-bottom: 30px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(255, 51, 51, 0.1);
+        }
+
+        .pulse { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* Grid de Inteligência */
+        .grid-stats { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 25px; 
+            margin-bottom: 40px;
+        }
+
+        .risk-card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px);
+            border: 1px solid #30363d; 
+            padding: 25px; 
+            border-radius: 16px; 
+            transition: transform 0.3s ease;
+        }
+
+        .risk-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .stat-value { font-size: 32px; font-weight: 800; color: var(--gold); letter-spacing: -1px; }
+
+        /* Monitor de Logs (Terminal) */
+        .terminal {
+            background: #000;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--success);
+            height: 150px;
+            overflow-y: auto;
+            border: 1px solid #222;
+            margin-top: 20px;
+        }
+
+        /* Tabela Avançada */
+        .table-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 10px;
+            border: 1px solid #30363d;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 20px; color: #8b949e; font-size: 13px; text-transform: uppercase; }
+        td { padding: 20px; border-top: 1px solid #30363d; }
+
+        .badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+        .badge-danger { background: rgba(255, 51, 51, 0.2); color: #ff3333; border: 1px solid #ff3333; }
+        .badge-warning { background: rgba(255, 136, 0, 0.2); color: #ff8800; border: 1px solid #ff8800; }
+
+        .btn-action { 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 700; 
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .btn-ban { background: var(--danger); color: white; }
+        .btn-ban:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(255, 51, 51, 0.4); }
+
+        /* Gate de Segurança (Lock) */
+        .security-gate { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: linear-gradient(135deg, #05070a 0%, #0d1117 100%); 
+            z-index: 10000; display: flex; align-items: center; justify-content: center; 
+        }
+
+        #riskPass {
+            background: #161b22;
+            border: 1px solid #30363d;
+            color: var(--gold);
+            padding: 15px;
+            border-radius: 8px;
+            width: 300px;
+            font-size: 18px;
+            letter-spacing: 5px;
+            outline: none;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="riskGate" class="security-gate">
+        <div style="text-align: center;">
+            <div style="font-size: 50px; margin-bottom: 20px;">🛡️</div>
+            <h2 style="color: var(--gold); letter-spacing: 2px;">SENTINEL RISK GATE</h2>
+            <p style="color: #666; margin-bottom: 30px;">AUTENTICAÇÃO DE NÍVEL 1 EXIGIDA</p>
+            <input type="password" id="riskPass" placeholder="••••••••" maxlength="11">
+            <br><br>
+            <button onclick="unlockRisk()" style="background: var(--gold); color: #000; padding: 15px 40px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; width: 330px;">ACESSAR NÚCLEO</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <h2 style="color: var(--gold); display: flex; align-items: center; gap: 10px;">
+            <span style="background: var(--gold); width: 10px; height: 10px; border-radius: 50%;"></span>
+            BET SOCIAL
+        </h2>
+        <p style="font-size: 11px; color: #8b949e; margin-bottom: 40px;">GESTÃO DE RISCO DE ALTA PERFORMANCE</p>
+        
+        <nav style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="color: #8b949e; font-size: 12px; font-weight: bold; margin-bottom: 10px;">ANÁLISE DE IA</div>
+            <a href="#" style="text-decoration: none; color: var(--gold); font-size: 14px;">⚡ Monitor de Bots v2.4</a>
+            <a href="#" style="text-decoration: none; color: #fff; font-size: 14px;">📊 Padrões de Apostas</a>
+            <a href="#" style="text-decoration: none; color: #fff; font-size: 14px;">🌐 Controle de Geofencing</a>
+            <a href="#" style="text-decoration: none; color: #fff; font-size: 14px;">🧾 Auditoria Financeira</a>
+        </nav>
+
+        <div class="terminal" id="termLogs">
+            [SYS] Inicializando Risk-AI...<br>
+            [SYS] Carregando heurísticas...<br>
+            [OK] Conectado ao Financial-Core.
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="alert-box pulse">
+            <div>
+                <span class="badge badge-danger" style="margin-right: 15px;">Crítico</span>
+                <strong>ALERTA DE SEGURANÇA:</strong> Anomalia detectada no Jogo ID: 442. Volume anormal de apostas via API não autorizada.
+            </div>
+            <button class="btn-action btn-ban" onclick="freezeMarket()">SUSPENDER MERCADO</button>
+        </div>
+
+        <div class="grid-stats">
+            <div class="risk-card">
+                <label style="color: #8b949e; font-size: 12px;">LUCRO RETIDO (AUDITORIA)</label>
+                <div class="stat-value">R$ 142.500,00</div>
+                <div style="margin-top: 10px; height: 60px;">
+                    <canvas id="chartRetention"></canvas>
+                </div>
+            </div>
+            <div class="risk-card">
+                <label style="color: #8b949e; font-size: 12px;">AMEAÇAS NEUTRALIZADAS</label>
+                <div class="stat-value">128</div>
+                <small style="color: var(--success);">+14% em relação a ontem</small>
+            </div>
+            <div class="risk-card">
+                <label style="color: #8b949e; font-size: 12px;">SCORE DE SAÚDE DA BANCA</label>
+                <div class="stat-value" style="color: var(--success);">98.2%</div>
+                <small>Exposição: R$ 2.4M (Seguro)</small>
+            </div>
+        </div>
+
+        <h3>Contas Sob Auditoria Direta</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Usuário / Identidade</th>
+                        <th>Win Rate</th>
+                        <th>Volume (24h)</th>
+                        <th>Nível de Risco</th>
+                        <th>Ação de Auditor</th>
+                    </tr>
+                </thead>
+                <tbody id="userTable">
+                    <tr>
+                        <td>
+                            <strong>User_9921</strong><br>
+                            <small style="color: #666;">IP: 187.12.44.110</small>
+                        </td>
+                        <td style="color: var(--danger); font-weight: bold;">94.2%</td>
+                        <td>R$ 15.200,50</td>
+                        <td><span class="badge badge-danger">Crítico (Bot)</span></td>
+                        <td><button class="btn-action btn-ban" onclick="banUser('9921')">BANIR E CONGELAR</button></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Influencer_Vip_01</strong><br>
+                            <small style="color: #666;">IP: 200.19.10.05</small>
+                        </td>
+                        <td style="color: var(--warning); font-weight: bold;">72.1%</td>
+                        <td>R$ 45.000,00</td>
+                        <td><span class="badge badge-warning">Médio (Pro)</span></td>
+                        <td><button class="btn-action" style="background: #30363d; color: white;" onclick="limitUser('01')">LIMITAR ODD</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const AUDIT_PASS = "16146178721";
+
+        // Inicializa Gráfico de exemplo
+        const ctx = document.getElementById('chartRetention').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['10:00', '11:00', '12:00', '13:00', '14:00'],
+                datasets: [{
+                    label: 'Bloqueios',
+                    data: [12, 19, 3, 5, 22],
+                    borderColor: '#f3ba2f',
+                    borderWidth: 2,
+                    fill: false,
+                    pointRadius: 0
+                }]
+            },
+            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+        });
+
+        function addLog(msg) {
+            const term = document.getElementById('termLogs');
+            term.innerHTML += `<br>[AI] ${msg}`;
+            term.scrollTop = term.scrollHeight;
+        }
+
+        function unlockRisk() {
+            const val = document.getElementById('riskPass').value;
+            if(val === AUDIT_PASS) {
+                document.getElementById('riskGate').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('riskGate').style.display = 'none';
+                    addLog("Sessão iniciada por Auditor Autorizado.");
+                }, 500);
+            } else {
+                addLog("Tentativa de intrusão detectada!");
+                alert("ACESSO NEGADO. COORDENADAS DE IP ENVIADAS AO MAICON.");
+            }
+        }
+
+        function banUser(id) {
+            if(confirm(`Confirmar BANIMENTO do ID ${id}? O saldo será revertido para a reserva de segurança.`)) {
+                addLog(`Usuário ${id} banido. R$ 15k recuperados.`);
+                alert("EXECUÇÃO CONCLUÍDA. BANCA PROTEGIDA.");
+            }
+        }
+
+        function freezeMarket() {
+            addLog("MERCADO ID 442 SUSPENSO PREVENTIVAMENTE.");
+            alert("MERCADO TRAVADO NO CORE FINANCEIRO.");
+        }
+
+        function limitUser(id) {
+            addLog(`Usuário ${id} limitado para ODD Máxima de 1.50.`);
+            alert("LIMITAÇÃO APLICADA.");
+        }
+    </script>
+</body>
+</html>

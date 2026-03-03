@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FINANCIAL CORE | BET SOCIAL - NEXUS EDITION</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { 
+            --gold: #f3ba2f; 
+            --gold-glow: rgba(243, 186, 47, 0.3);
+            --bg: #05070a; 
+            --card-bg: #11141a;
+            --emerald: #00ff88; 
+            --crimson: #ff3e3e; 
+            --text-dim: #848e9c;
+        }
+
+        * { box-sizing: border-box; }
+        body { 
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            overflow-x: hidden;
+        }
+
+        /* --- SECURITY GATE (OVERLAY) --- */
+        .security-gate { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle, #1a1d23 0%, #05070a 100%); 
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gate-box {
+            text-align: center;
+            padding: 40px;
+            border: 1px solid var(--gold);
+            box-shadow: 0 0 50px var(--gold-glow);
+            border-radius: 20px;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        /* --- LAYOUT --- */
+        .sidebar { 
+            width: 280px; height: 100vh; background: var(--card-bg); 
+            position: fixed; border-right: 1px solid #2b2f36; 
+            display: flex; flex-direction: column;
+        }
+
+        .main-content { margin-left: 280px; padding: 30px; }
+
+        /* --- COMPONENTS --- */
+        .grid-stats { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; margin-bottom: 30px;
+        }
+
+        .stat-card { 
+            background: var(--card-bg); 
+            border: 1px solid #2b2f36; 
+            padding: 25px; border-radius: 16px; 
+            position: relative; overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--gold);
+        }
+
+        .balance { 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.2em; font-weight: 900; color: var(--gold); 
+            margin: 15px 0; letter-spacing: -1px;
+        }
+
+        /* --- BOTÕES AVANÇADOS --- */
+        .btn { 
+            padding: 14px 28px; border: none; border-radius: 8px; 
+            font-weight: 800; cursor: pointer; text-transform: uppercase; 
+            transition: 0.3s; font-size: 0.85em; width: 100%;
+        }
+
+        .btn-withdraw { background: var(--gold); color: #000; box-shadow: 0 4px 15px var(--gold-glow); }
+        .btn-withdraw:hover { transform: scale(1.02); filter: brightness(1.1); }
+        
+        .btn-freeze { background: transparent; border: 1px solid var(--crimson); color: var(--crimson); }
+        .btn-freeze:hover { background: var(--crimson); color: white; }
+
+        /* --- TABLE --- */
+        .transaction-container {
+            background: var(--card-bg); border-radius: 16px; border: 1px solid #2b2f36; margin-top: 20px;
+        }
+
+        .transaction-table { width: 100%; border-collapse: collapse; }
+        .transaction-table th { background: #1a1e26; padding: 20px; color: var(--text-dim); font-size: 0.75em; text-align: left; }
+        .transaction-table td { padding: 18px 20px; border-bottom: 1px solid #2b2f36; font-family: 'JetBrains Mono'; font-size: 0.9em; }
+
+        .status-pill { padding: 4px 10px; border-radius: 4px; font-size: 0.7em; font-weight: bold; background: rgba(0,255,136,0.1); color: var(--emerald); }
+
+        /* --- CHART & LOGS --- */
+        .visual-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 20px; }
+        #chartBox { background: var(--card-bg); padding: 20px; border-radius: 16px; border: 1px solid #2b2f36; }
+        
+        .network-status { font-size: 0.8em; margin-bottom: 20px; color: var(--text-dim); }
+        .dot { height: 8px; width: 8px; background: var(--emerald); border-radius: 50%; display: inline-block; margin-right: 5px; box-shadow: 0 0 10px var(--emerald); }
+
+    </style>
+</head>
+<body>
+
+    <div id="financialGate" class="security-gate">
+        <div class="gate-box">
+            <div style="font-size: 3em; margin-bottom: 10px;">🛡️</div>
+            <h1 style="color: var(--gold); letter-spacing: 8px; margin: 0;">FINANCIAL CORE</h1>
+            <p style="color: var(--text-dim); margin-bottom: 30px;">AUTH REQUIRED | SECURE LAYER V3</p>
+            <input type="password" id="finPass" placeholder="SENHA MESTRE" 
+                   style="padding: 18px; width: 320px; background: #000; border: 1px solid #333; color: var(--gold); text-align: center; border-radius: 8px; font-size: 1.2em; outline: none;">
+            <br><br>
+            <button onclick="accessFinancial()" class="btn btn-withdraw" style="width: 320px;">DESBLOQUEAR TERMINAL</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div style="padding: 40px 20px; text-align: center;">
+            <h2 style="color: var(--gold); letter-spacing: 2px;">BET SOCIAL</h2>
+            <div style="color: var(--text-dim); font-size: 0.7em;">ADMINISTRADOR: MAICON</div>
+        </div>
+        <nav style="padding: 20px;">
+            <div class="network-status"><span class="dot"></span> BTC NETWORK: 12ms</div>
+            <div class="network-status"><span class="dot"></span> PIX GATEWAY: ONLINE</div>
+            <div class="network-status"><span class="dot"></span> CRYPTO-VAULT: ARMED</div>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <div>
+                <h1 style="margin: 0; font-weight: 900; font-size: 2.5em;">CONTROLE DE FLUXO</h1>
+                <p style="color: var(--text-dim); margin: 5px 0;">Monitoramento de liquidez e reserva técnica de trilhões.</p>
+            </div>
+            <div style="text-align: right;">
+                <div id="clock" style="font-family: 'JetBrains Mono'; font-size: 1.2em; color: var(--gold);">00:00:00</div>
+                <div style="font-size: 0.7em; color: var(--text-dim);">UTC-3 SÃO PAULO</div>
+            </div>
+        </header>
+
+        <div class="grid-stats">
+            <div class="stat-card">
+                <label style="font-size: 0.75em; color: var(--text-dim); font-weight: bold;">LUCRO LÍQUIDO ACUMULADO</label>
+                <div class="balance" id="totalProfit">R$ 1.000.000.000.000,00</div>
+                <div style="height: 4px; width: 100%; background: #222; border-radius: 2px;">
+                    <div style="width: 85%; height: 100%; background: var(--emerald);"></div>
+                </div>
+                <small style="display:block; margin-top: 10px; color: var(--emerald);">+12.5% em relação ao mês anterior</small>
+            </div>
+
+            <div class="stat-card">
+                <label style="font-size: 0.75em; color: var(--text-dim); font-weight: bold;">RESERVA EM COLD WALLET</label>
+                <div class="balance" id="cryptoReserve">4,281.50 BTC</div>
+                <button class="btn btn-withdraw" onclick="sweepToMaster()">EXECUTAR SWEEP INTEGRAL</button>
+            </div>
+
+            <div class="stat-card">
+                <label style="font-size: 0.75em; color: var(--text-dim); font-weight: bold;">SOLICITAÇÕES DE SAQUE</label>
+                <div class="balance" id="pendingWithdraws">1,402</div>
+                <button class="btn btn-freeze" onclick="toggleWithdraws()">MODO DE SEGURANÇA (CONGELAR)</button>
+            </div>
+        </div>
+
+        <div class="visual-row">
+            <div id="chartBox">
+                <h3 style="margin-top: 0;">Volume de Transações (Trilhões/Mês)</h3>
+                <canvas id="mainChart" height="120"></canvas>
+            </div>
+            <div id="chartBox">
+                <h3 style="margin-top: 0;">Distribuição de Ativos</h3>
+                <canvas id="pieChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <h3>LOG DE OPERAÇÕES EM TEMPO REAL</h3>
+        <div class="transaction-container">
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>TIMESTAMP</th>
+                        <th>ATIVO</th>
+                        <th>HASH / USUÁRIO</th>
+                        <th>VALOR</th>
+                        <th>STATUS</th>
+                    </tr>
+                </thead>
+                <tbody id="txLog">
+                    <tr>
+                        <td>2026-03-02 14:30:22</td>
+                        <td><span style="color: var(--gold);">BTC</span></td>
+                        <td>0x71C...a2122</td>
+                        <td>+ 1.50 BTC</td>
+                        <td><span class="status-pill">CONFIRMADO</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const MASTER_PASS = "16146178721";
+
+        // Autenticação
+        function accessFinancial() {
+            const pass = document.getElementById('finPass').value;
+            if(pass === MASTER_PASS) {
+                const gate = document.getElementById('financialGate');
+                gate.style.opacity = '0';
+                setTimeout(() => gate.style.display = 'none', 800);
+            } else {
+                document.getElementById('finPass').style.borderColor = 'var(--crimson)';
+                document.getElementById('finPass').value = '';
+                console.error("ALERTA: Tentativa de acesso não autorizada detectada.");
+            }
+        }
+
+        // Gráfico de Exemplo (Chart.js)
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                datasets: [{
+                    label: 'Volume em Trilhões',
+                    data: [0.2, 0.5, 0.8, 1.1, 0.9, 1.0],
+                    borderColor: '#f3ba2f',
+                    backgroundColor: 'rgba(243, 186, 47, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { y: { grid: { color: '#222' } }, x: { grid: { color: '#222' } } }
+            }
+        });
+
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['BTC', 'ETH', 'PIX', 'BUSD'],
+                datasets: [{
+                    data: [45, 25, 20, 10],
+                    backgroundColor: ['#f3ba2f', '#627eea', '#00ff88', '#f0b90b'],
+                    borderWidth: 0
+                }]
+            }
+        });
+
+        // Relógio
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('pt-BR');
+        }, 1000);
+
+        function sweepToMaster() {
+            if(confirm("Maicon, confirma a varredura para o Crypto-Vault de segurança?")) {
+                console.warn("Iniciando transferência massiva...");
+            }
+        }
+
+        function toggleWithdraws() {
+            const btn = event.target;
+            btn.innerText = "SISTEMA BLOQUEADO";
+            btn.style.background = "var(--crimson)";
+            btn.style.color = "white";
+        }
+    </script>
+</body>
+</html>

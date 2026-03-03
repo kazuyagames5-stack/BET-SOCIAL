@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL DE AUDITORIA | MAICON SANCHES ELITE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500&family=JetBrains+Mono:wght@100;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --neon-green: #39ff14; 
+            --neon-glow: rgba(57, 255, 20, 0.3);
+            --alert-red: #ff003c; 
+            --bg-obsidian: #020202; 
+            --panel-dark: #0a0a0a;
+            --border-color: #1a1a1a;
+        }
+
+        * { box-sizing: border-box; cursor: crosshair; }
+
+        body { 
+            background: var(--bg-obsidian); 
+            color: #d1d1d1; 
+            font-family: 'JetBrains Mono', monospace; 
+            margin: 0; 
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 50%, #0a0a0a 0%, #020202 100%),
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 100%, 100% 4px, 3px 100%;
+        }
+
+        .audit-wrapper { max-width: 1600px; margin: auto; padding: 40px; opacity: 0; transition: opacity 1s ease; }
+        .audit-wrapper.active { opacity: 1; }
+
+        /* Header Estilo HUD (Heads-Up Display) */
+        .header-security { 
+            border-left: 5px solid var(--neon-green); 
+            padding: 20px; 
+            margin-bottom: 40px; 
+            background: var(--panel-dark);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        h1 { font-family: 'JetBrains Mono'; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-size: 1.8rem; }
+
+        /* Grid de Escudos Dinâmicos */
+        .shield-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        
+        .shield-card { 
+            background: var(--panel-dark); 
+            border: 1px solid var(--border-color); 
+            padding: 30px; 
+            border-radius: 4px; 
+            position: relative; 
+            transition: 0.4s;
+        }
+
+        .shield-card:hover { border-color: var(--neon-green); transform: translateY(-5px); box-shadow: 0 0 20px var(--neon-glow); }
+        .shield-card::after { content: "SECURED"; position: absolute; top: 10px; right: 10px; font-size: 10px; color: var(--neon-green); opacity: 0.5; }
+
+        .shield-label { color: #555; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; }
+        .shield-status { font-size: 1.8rem; margin-top: 15px; color: #fff; font-family: 'Fira Code', monospace; }
+
+        /* Monitor de Integridade com Efeito de Matrix */
+        .wallet-monitor { 
+            background: var(--panel-dark); 
+            border: 1px solid var(--border-color); 
+            border-radius: 4px; 
+            padding: 30px; 
+            box-shadow: inset 0 0 50px #000;
+        }
+
+        .wallet-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: 25px; }
+        .wallet-table th { text-align: left; color: var(--neon-green); padding: 15px; font-size: 0.7rem; text-transform: uppercase; border-bottom: 2px solid #1a1a1a; }
+        .wallet-table td { background: #0d0d0d; padding: 20px; font-size: 0.85rem; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a; }
+        .wallet-table td:first-child { border-left: 1px solid #1a1a1a; border-radius: 4px 0 0 4px; }
+        .wallet-table td:last-child { border-right: 1px solid #1a1a1a; border-radius: 0 4px 4px 0; }
+        
+        .hash-code { font-family: 'Fira Code'; font-size: 0.7rem; color: #444; transition: 0.3s; }
+        .hash-code:hover { color: var(--neon-green); }
+
+        .status-valid { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-glow); font-weight: bold; }
+        .status-invalid { color: var(--alert-red); text-shadow: 0 0 10px var(--alert-red); font-weight: bold; animation: glitch 0.3s infinite; }
+
+        @keyframes glitch { 0% { transform: translateX(0); } 20% { transform: translateX(-2px); } 40% { transform: translateX(2px); } 100% { transform: translateX(0); } }
+
+        /* Controles de Comando */
+        .btn-rotate { 
+            background: transparent; border: 1px solid var(--neon-green); 
+            color: var(--neon-green); padding: 18px 40px; cursor: pointer; 
+            font-weight: bold; font-family: 'JetBrains Mono'; text-transform: uppercase; 
+            transition: 0.3s; position: relative; overflow: hidden;
+        }
+
+        .btn-rotate:hover { background: var(--neon-green); color: #000; box-shadow: 0 0 30px var(--neon-green); }
+
+        /* Security Gate Refinado */
+        .security-gate { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 99999; display: flex; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            transition: 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        .input-aes {
+            padding: 20px; background: #050505; border: 1px solid #222; 
+            color: var(--neon-green); text-align: center; width: 400px; 
+            font-size: 1.2rem; font-family: 'Fira Code'; outline: none;
+            transition: 0.3s; margin-top: 20px;
+        }
+
+        .input-aes:focus { border-color: var(--neon-green); box-shadow: 0 0 20px var(--neon-glow); }
+    </style>
+</head>
+<body>
+
+    <div id="securityGate" class="security-gate">
+        <div style="text-align: center; border: 1px solid #1a1a1a; padding: 60px; background: #050505; border-radius: 8px;">
+            <div id="lockIcon" style="font-size: 40px; margin-bottom: 20px; color: #333;">🔒</div>
+            <h1 id="gateTitle" style="color: var(--neon-green); letter-spacing: 8px;">IDENTIFICANDO...</h1>
+            <p style="color: #444; font-size: 0.8rem; margin-top: 10px;">PROPRIETÁRIO: MAICON SANCHES</p>
+            <input type="password" id="gateKey" class="input-aes" placeholder="INSERT MASTER KEY" onkeypress="handleKey(event)">
+            <br>
+            <button onclick="unlockSecurity()" class="btn-rotate" style="width: 400px; margin-top: 20px;">AUTENTICAR COMANDO</button>
+        </div>
+    </div>
+
+    <div class="audit-wrapper" id="mainApp">
+        <header class="header-security">
+            <div>
+                <h1>AUDITORIA DE CRIPTOGRAFIA <span style="font-weight: 100;">v4.2</span></h1>
+                <p style="color: #555; margin: 5px 0 0 0;">Protocolo de Integridade: <span style="color: var(--neon-green);">SHA-3 QUANTUM SHIELD</span></p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin: 0;">SISTEMA: <span id="uptime" style="color: var(--neon-green);">ONLINE</span></p>
+                <small style="color: #444;" id="keyTimer">Última Rotação: Sincronizando...</small>
+            </div>
+        </header>
+
+        
+
+        <div class="shield-grid">
+            <div class="shield-card">
+                <div class="shield-label">Encriptação de Tráfego</div>
+                <div class="shield-status" id="cipherType">AES-256-GCM</div>
+            </div>
+            <div class="shield-card">
+                <div class="shield-label">Validação Blockchain</div>
+                <div class="shield-status">100% SYNC</div>
+            </div>
+            <div class="shield-card">
+                <div class="shield-label">Intrusões Neutralizadas</div>
+                <div class="shield-status" id="threatCount">1.242</div>
+            </div>
+        </div>
+
+        <div class="wallet-monitor">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; color: #fff; text-transform: uppercase;">Monitor de Integridade de Saldos</h3>
+                <span id="liveIndicator" style="font-size: 0.7rem; color: var(--neon-green);">● LIVE FEED</span>
+            </div>
+            
+            <table class="wallet-table">
+                <thead>
+                    <tr>
+                        <th>Cidadão/ID</th>
+                        <th>Saldo Auditado</th>
+                        <th>Assinatura Digital (Hash)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="auditList">
+                    </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 40px; display: flex; gap: 20px;">
+            <button class="btn-rotate" onclick="rotateKeys()">ROTACIONAR CAMADAS RSA-4096</button>
+            <button class="btn-rotate" style="border-color: var(--alert-red); color: var(--alert-red);" onclick="triggerAntiFraud()">FORÇAR TESTE ANTI-FRAUDE</button>
+        </div>
+    </div>
+
+    <script>
+        const MASTER_SEC_KEY = "16146178721";
+
+        function handleKey(e) { if(e.key === 'Enter') unlockSecurity(); }
+
+        function unlockSecurity() {
+            const val = document.getElementById('gateKey').value;
+            const gate = document.getElementById('securityGate');
+            
+            if(val === MASTER_SEC_KEY) {
+                gate.style.transform = "translateY(-100%)";
+                document.getElementById('mainApp').classList.add('active');
+                startLiveSystem();
+            } else {
+                document.getElementById('gateKey').style.borderColor = 'var(--alert-red)';
+                document.getElementById('lockIcon').innerText = '⚠️';
+                setTimeout(() => {
+                    document.getElementById('gateKey').style.borderColor = '#222';
+                    document.getElementById('lockIcon').innerText = '🔒';
+                }, 1000);
+            }
+        }
+
+        function startLiveSystem() {
+            // Simulação de tempo real
+            setInterval(() => {
+                const count = document.getElementById('threatCount');
+                count.innerText = (parseInt(count.innerText.replace('.', '')) + Math.floor(Math.random() * 3)).toLocaleString('pt-BR');
+            }, 3000);
+
+            // Popula tabela inicial
+            const list = document.getElementById('auditList');
+            const users = [
+                {id: "#SA_9912", bal: "15.000,00"},
+                {id: "#SA_4410", bal: "1.250,00"},
+                {id: "#SA_8821", bal: "542.100,00"}
+            ];
+
+            list.innerHTML = users.map(u => createRow(u.id, u.bal, true)).join('');
+            document.getElementById('keyTimer').innerText = "Última Rotação: Agora mesmo";
+        }
+
+        function createRow(id, bal, valid) {
+            const hash = btoa(Math.random()).substring(0, 32).toLowerCase();
+            return `
+                <tr>
+                    <td>${id}</td>
+                    <td>R$ ${bal}</td>
+                    <td class="hash-code">${hash}${hash}</td>
+                    <td><span class="${valid ? 'status-valid' : 'status-invalid'}">● ${valid ? 'INTEGRAL' : 'VIOLADO'}</span></td>
+                </tr>
+            `;
+        }
+
+        function rotateKeys() {
+            const cipher = document.getElementById('cipherType');
+            cipher.innerText = "ROTATING...";
+            cipher.style.color = "var(--neon-green)";
+            
+            setTimeout(() => {
+                cipher.innerText = "ChaCha20-Poly1305";
+                alert("SUCESSO: Camada de transporte rotacionada para ChaCha20.");
+            }, 1500);
+        }
+
+        function triggerAntiFraud() {
+            const list = document.getElementById('auditList');
+            list.innerHTML += createRow("#HACKER_ATTEMPT", "9.999.999,00", false);
+            alert("ALERTA CRÍTICO: Tentativa de injeção de saldo detectada no usuário #HACKER_ATTEMPT. Protocolo de congelamento de ativos acionado.");
+        }
+    </script>
+</body>
+</html>

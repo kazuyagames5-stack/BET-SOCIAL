@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>WHATSAPP COMMAND | ESTRATÉGIA DE CONVERSÃO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --wa-dark: #0b141a; 
+            --wa-green: #25d366; 
+            --wa-teal: #00a884; 
+            --wa-card: #111b21;
+            --text: #e9edef;
+            --gold: #f3ba2f;
+        }
+
+        body { 
+            background: var(--wa-dark); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh;
+        }
+
+        .wa-card { 
+            background: var(--wa-card); 
+            padding: 40px; 
+            border-radius: 24px; 
+            width: 100%;
+            max-width: 550px; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid #222e35;
+            position: relative;
+        }
+
+        .wa-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 5px;
+            background: var(--wa-green);
+            border-radius: 24px 24px 0 0;
+        }
+
+        h2 { color: var(--wa-green); font-weight: 800; margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        
+        .status-badge {
+            background: rgba(37, 211, 102, 0.1);
+            color: var(--wa-green);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        label { display: block; margin-bottom: 8px; font-size: 14px; color: #8696a0; }
+
+        textarea { 
+            width: 100%; 
+            height: 120px; 
+            background: #2a3942; 
+            border: 1px solid #3b4a54; 
+            border-radius: 12px; 
+            color: white; 
+            padding: 15px; 
+            font-size: 16px; 
+            resize: none;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus { border-color: var(--wa-green); }
+
+        .stats-row { 
+            background: #202c33; 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-wa { 
+            background: var(--wa-green); 
+            color: #0b141a; 
+            border: none; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            font-size: 16px;
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-wa:hover { 
+            background: #20bd5c; 
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
+        }
+
+        /* Log de Disparo */
+        #logArea {
+            margin-top: 20px;
+            background: #000;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #00ff00;
+            height: 100px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .variable-hint { font-size: 11px; color: var(--gold); margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="wa-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>🚀 COMMANDER <span class="status-badge">Pronto</span></h2>
+        </div>
+
+        <p style="color: #8696a0; font-size: 14px; line-height: 1.6;">
+            Maicon, o sistema identificou <strong>3.100 leads</strong> que ainda não converteram. 
+            Envie a "Oferta Irrecusável" para limpar a fila de pendentes.
+        </p>
+        
+        <label>MENSAGEM DE ALTA CONVERSÃO (SCRIPT AFILIADO):</label>
+        <textarea id="msgBody">⚠️ AVISO DE EXPIRAÇÃO: O Maicon liberou um saldo de R$ 20,00 na sua banca para você testar agora.
+
+Clique aqui e recupere seu acesso: https://betsocial.com/acesso
+
+Válido pelos próximos 15 minutos! 🏃‍♂️💨</textarea>
+        <div class="variable-hint">💡 O sistema irá alternar entre 5 números de disparo para evitar bloqueio.</div>
+        
+        <div class="stats-row">
+            <div>
+                <span style="color: #8696a0; font-size: 12px;">Público-Alvo:</span><br>
+                <strong style="color: var(--wa-green);">JOGADORES PENDENTES</strong>
+            </div>
+            <div style="text-align: right;">
+                <span style="color: #8696a0; font-size: 12px;">Volume:</span><br>
+                <strong>3.100 Contatos</strong>
+            </div>
+        </div>
+
+        <button class="btn-wa" id="mainBtn" onclick="startMassiveCampaign()">INICIAR DISPARO EM MASSA</button>
+
+        <div id="logArea"></div>
+    </div>
+
+    <script>
+        const MASTER_KEY = "16146178721";
+
+        function startMassiveCampaign() {
+            const entry = prompt("AUTENTICAÇÃO DE COMANDO (CHAVE MESTRE):");
+            
+            if(entry === MASTER_KEY) {
+                executeSequence();
+            } else {
+                alert("ACESSO NEGADO. TENTATIVA REGISTRADA NO SISTEMA.");
+            }
+        }
+
+        function executeSequence() {
+            const btn = document.getElementById('mainBtn');
+            const log = document.getElementById('logArea');
+            const msg = document.getElementById('msgBody').value;
+
+            btn.disabled = true;
+            btn.innerText = "EXECUTANDO DISPAROS...";
+            btn.style.background = "#3b4a54";
+            log.style.display = 'block';
+
+            addLog("Conectando à API do WhatsApp Business...");
+            setTimeout(() => addLog("Sincronizando banco de dados de pendentes (3.100)..."), 1000);
+            setTimeout(() => addLog("Injetando script de oferta: " + msg.substring(0, 20) + "..."), 2000);
+            setTimeout(() => {
+                addLog(">>> DISPARO EM LOTE INICIADO COM SUCESSO.");
+                processLoop(0);
+            }, 3000);
+        }
+
+        function addLog(text) {
+            const log = document.getElementById('logArea');
+            log.innerHTML += `> ${text}<br>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function processLoop(count) {
+            if(count < 10) { // Simulação visual
+                setTimeout(() => {
+                    addLog(`Lote ${count + 1}: Enviado para 310 números... [OK]`);
+                    processLoop(count + 1);
+                }, 800);
+            } else {
+                addLog("CAMPANHA FINALIZADA. Taxa de entrega estimada: 98.4%");
+                document.getElementById('mainBtn').innerText = "CAMPANHA CONCLUÍDA";
+                document.getElementById('mainBtn').style.background = "var(--wa-teal)";
+            }
+        }
+    </script>
+</body>
+</html>

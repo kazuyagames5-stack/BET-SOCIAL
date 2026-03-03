@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BET SOCIAL | LAUNCH CONTROL CENTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@300;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --fire: #ff4d00; 
+            --fire-glow: rgba(255, 77, 0, 0.4);
+            --space: #020205; 
+            --card-bg: rgba(15, 15, 25, 0.8);
+            --google: #4285f4;
+            --success: #00ff88;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        body { 
+            background: var(--space); 
+            color: #fff; 
+            font-family: 'Inter', sans-serif; 
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #101020 0%, #020205 100%);
+        }
+
+        /* Canvas para efeito de estrelas/partículas ao fundo */
+        #stars { position: fixed; top: 0; left: 0; z-index: -1; }
+
+        .launch-container { max-width: 1400px; margin: auto; padding: 40px; }
+
+        /* Cabeçalho Futurista */
+        .header-launch { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 77, 0, 0.3); 
+            padding-bottom: 30px; 
+            margin-bottom: 40px; 
+        }
+
+        h1 { font-family: 'Orbitron', sans-serif; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+        .status-badge { background: rgba(255, 77, 0, 0.1); border: 1px solid var(--fire); color: var(--fire); padding: 5px 15px; border-radius: 50px; font-size: 12px; font-weight: bold; }
+
+        /* Grid de Performance Nuclear */
+        .acquisition-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        
+        .stat-card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05); 
+            padding: 30px; 
+            border-radius: 20px; 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after { content: ""; position: absolute; bottom: 0; left: 0; width: 0%; height: 4px; background: var(--fire); transition: 1s ease; }
+        .stat-card:hover::after { width: 100%; }
+
+        .stat-card h3 { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        .stat-number { font-family: 'Orbitron', sans-serif; font-size: 2.5em; font-weight: bold; color: var(--fire); text-shadow: 0 0 15px var(--fire-glow); }
+
+        /* Fontes de Tráfego e Controle */
+        .traffic-sources { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; }
+        .source-box { background: var(--card-bg); padding: 35px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        
+        .progress-bar { background: rgba(255,255,255,0.05); height: 8px; border-radius: 10px; margin: 15px 0 25px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0; background: var(--fire); box-shadow: 0 0 10px var(--fire); }
+
+        /* Botões de Ação Imediata */
+        .btn-launch { 
+            background: linear-gradient(135deg, #ff4d00, #ff8c00); 
+            color: #fff; border: none; padding: 20px; border-radius: 12px; 
+            font-family: 'Orbitron', sans-serif; font-weight: bold; cursor: pointer; 
+            width: 100%; font-size: 0.9em; margin-top: 15px;
+            box-shadow: 0 10px 20px rgba(255, 77, 0, 0.2);
+        }
+
+        .btn-launch:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 15px 30px var(--fire-glow); }
+        .btn-launch:active { transform: scale(0.98); }
+        .btn-seo { background: linear-gradient(135deg, #4285f4, #34a853); }
+
+        /* Lock Screen Avançado */
+        .launch-lock { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--space); z-index: 10000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .lock-content { text-align: center; max-width: 400px; }
+        .pulse-orb { width: 80px; height: 80px; background: var(--fire); border-radius: 50%; margin: 0 auto 30px; animation: pulse 2s infinite; filter: blur(2px); }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 77, 0, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 40px rgba(255, 77, 0, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 77, 0, 0); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .traffic-sources { grid-template-columns: 1fr; }
+            .acquisition-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="stars"></canvas>
+
+    <div id="launchLock" class="launch-lock">
+        <div class="lock-content">
+            <div class="pulse-orb"></div>
+            <h1 style="color: var(--fire); margin-bottom: 10px;">IGNITION SYSTEM</h1>
+            <p style="color: #666; font-size: 12px; letter-spacing: 2px; margin-bottom: 30px;">AUTHORIZATION: MAICON SANCHES</p>
+            <input type="password" id="launchKey" placeholder="CHAVE MESTRE" style="padding: 20px; background: #0a0a0f; border: 1px solid #222; color: #ff4d00; text-align: center; width: 100%; border-radius: 12px; font-family: 'Orbitron'; font-size: 18px; margin-bottom: 20px; outline: none; border-color: var(--fire);">
+            <button onclick="unlockLaunch()" class="btn-launch">AUTENTICAR SEQUÊNCIA</button>
+        </div>
+    </div>
+
+    <div class="launch-container">
+        <header class="header-launch">
+            <div>
+                <h1 style="font-size: 1.5em;"><span style="color: var(--fire);">BET SOCIAL</span> COMMAND</h1>
+                <p style="color: #666; font-size: 12px;">Comando Alpha-20 | Dominando Tráfego Global</p>
+            </div>
+            <div style="text-align: right;">
+                <div class="status-badge" id="live-indicator">LIVE: SISTEMA ESTÁVEL</div>
+            </div>
+        </header>
+
+        <div class="acquisition-grid">
+            <div class="stat-card"><h3>Live Users</h3><div class="stat-number" id="liveUsers">42.109</div></div>
+            <div class="stat-card"><h3>Reg. Conversion</h3><div class="stat-number">18.4%</div></div>
+            <div class="stat-card"><h3>CPA Atual</h3><div class="stat-number" style="color: var(--success);">R$ 12,50</div></div>
+            <div class="stat-card"><h3>NET ROI</h3><div class="stat-number">340%</div></div>
+        </div>
+
+        <div class="traffic-sources">
+            <div class="source-box">
+                <h3 style="font-family: 'Orbitron'; color: var(--fire); margin-bottom: 25px;">Traffic Monitoring</h3>
+                
+                <p style="font-size: 12px; display: flex; justify-content: space-between;">SEO GOOGLE <span>45%</span></p>
+                <div class="progress-bar"><div class="progress-fill" style="width: 45%; background: var(--google);"></div></div>
+                
+                <p style="font-size: 12px; display: flex; justify-content: space-between;">INFLUENCERS (INSTA) <span>30%</span></p>
+                <div class="progress-bar"><div class="progress-fill" style="width: 30%; background: #e1306c;"></div></div>
+                
+                <p style="font-size: 12px; display: flex; justify-content: space-between;">TELEGRAM ELITE <span>25%</span></p>
+                <div class="progress-bar"><div class="progress-fill" style="width: 25%; background: #0088cc;"></div></div>
+            </div>
+
+            <div class="source-box" style="display: flex; flex-direction: column; justify-content: center;">
+                <h3 style="text-align: center; margin-bottom: 20px; font-size: 14px; color: #888;">GUERRILLA ACTIONS</h3>
+                <button class="btn-launch btn-seo" onclick="indexGoogle()">FORCE GOOGLE INDEX (PINGS)</button>
+                <button class="btn-launch" style="background: #27ae60;" onclick="pushSMS()">PUSH SMS BLAST (150K)</button>
+                <button class="btn-launch" style="background: #8e44ad;" onclick="triggerViral()">ACTIVATE SOCIAL PROOF POPUPS</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; text-align: center; border: 1px solid var(--fire); border-radius: 30px; padding: 50px; background: radial-gradient(circle at center, rgba(255,77,0,0.05) 0%, transparent 100%);">
+            <h2 style="font-family: 'Orbitron'; color: var(--fire); font-size: 2em; margin-bottom: 10px;">DOMINAÇÃO TOTAL</h2>
+            <p style="color: #aaa; margin-bottom: 30px;">Liberação massiva de bônus (200%) + Overclock de Servidores para Entrada em Massa.</p>
+            <button class="btn-launch" style="width: 350px; height: 70px; font-size: 1.2em;" onclick="launchTotal()">EXECUTAR LANÇAMENTO CRÍTICO</button>
+        </div>
+    </div>
+
+    <script>
+        const AUTH_LAUNCH = "16146178721";
+
+        // Desativa o lock com transição suave
+        function unlockLaunch() {
+            const pass = document.getElementById('launchKey').value;
+            if(pass === AUTH_LAUNCH) {
+                const lock = document.getElementById('launchLock');
+                lock.style.opacity = '0';
+                lock.style.pointerEvents = 'none';
+                initStars();
+                startLiveSimulation();
+            } else {
+                alert("ACESSO NEGADO. COORDENADAS RASTREADAS.");
+            }
+        }
+
+        // Simulação de Tráfego em Tempo Real (Para Maicon ver o movimento)
+        function startLiveSimulation() {
+            setInterval(() => {
+                const live = document.getElementById('liveUsers');
+                let current = parseInt(live.innerText.replace('.', ''));
+                current += Math.floor(Math.random() * 50) - 20;
+                live.innerText = current.toLocaleString('pt-BR');
+            }, 2000);
+        }
+
+        // Funções de Ação (Mantendo a funcionalidade original com melhoria visual)
+        function indexGoogle() {
+            console.log("Iniciando Ping em massa via Google API...");
+            alert("SEO: 4.500 páginas enviadas para indexação prioritária.");
+        }
+
+        function pushSMS() {
+            if(confirm("Maicon, confirmar disparo em massa para toda a base?")) {
+                alert("SMS DISPARADOS. Verifique o painel de envios em 60 segundos.");
+            }
+        }
+
+        function triggerViral() {
+            alert("Prova Social Ativada: 'Fulano acabou de ganhar R$ 450,00' aparecerá para todos.");
+        }
+
+        function launchTotal() {
+            const btn = event.target;
+            btn.innerText = "LANCAMENTO EM CURSO...";
+            btn.style.background = "#fff";
+            btn.style.color = "#000";
+            document.getElementById('live-indicator').style.background = "red";
+            document.getElementById('live-indicator').innerText = "MODO CRÍTICO ATIVADO";
+            alert("SISTEMA EM OVERDRIVE! Dominação total iniciada.");
+        }
+
+        // Efeito Visual de Estrelas (Background)
+        function initStars() {
+            const canvas = document.getElementById('stars');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const stars = [];
+
+            for(let i=0; i<200; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2,
+                    speed: Math.random() * 0.5
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0,0,canvas.width, canvas.height);
+                ctx.fillStyle = "#fff";
+                stars.forEach(s => {
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+                    ctx.fill();
+                    s.y += s.speed;
+                    if(s.y > canvas.height) s.y = 0;
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>

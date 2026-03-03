@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>COMPLIANCE CENTER | GLOBAL AUDIT v4.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --shield-blue: #3498db; 
+            --shield-glow: rgba(52, 152, 219, 0.5);
+            --bg-legal: #07090c; 
+            --card-bg: #11141b;
+            --warning: #f1c40f; 
+            --danger: #e74c3c;
+            --success: #2ecc71;
+            --text-white: #f8f9fa; 
+            --border: #232a35;
+        }
+
+        * { box-sizing: border-box; transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        body { 
+            background: var(--bg-legal); 
+            color: var(--text-white); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Camada de Segurança Alpha */
+        .legal-lock { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle at center, #0a0c10 0%, #000 100%); 
+            z-index: 99999; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            backdrop-filter: blur(15px);
+        }
+
+        .lock-container {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--shield-blue);
+            text-align: center;
+            box-shadow: 0 0 40px rgba(52, 152, 219, 0.15);
+        }
+
+        .key-input { 
+            padding: 18px; 
+            width: 320px; 
+            background: #050505; 
+            border: 1px solid var(--border); 
+            color: var(--shield-blue); 
+            text-align: center; 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4em; 
+            border-radius: 8px; 
+            outline: none;
+            margin-bottom: 20px;
+        }
+
+        .key-input:focus { border-color: var(--shield-blue); box-shadow: 0 0 15px var(--shield-glow); }
+
+        /* Dashboard de Auditoria */
+        .header-compliance { 
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--shield-blue); 
+            padding: 20px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -1px; }
+        .subtitle { margin: 0; color: #666; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .status-badge { 
+            background: rgba(46, 204, 113, 0.1); 
+            color: var(--success); 
+            padding: 10px 20px; 
+            border-radius: 6px; 
+            font-weight: 800; 
+            border: 1px solid var(--success);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge::before { content: ""; width: 8px; height: 8px; background: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); }
+
+        .audit-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 25px; padding: 30px 40px; }
+        .audit-card { background: var(--card-bg); border-radius: 16px; padding: 30px; border: 1px solid var(--border); position: relative; }
+
+        /* Tabela Avançada */
+        .doc-list { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        .doc-list th { text-align: left; color: #555; padding: 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .doc-list td { padding: 20px 15px; background: #161a23; border-top: 1px solid #232a35; border-bottom: 1px solid #232a35; font-size: 14px; }
+        .doc-list td:first-child { border-left: 1px solid #232a35; border-radius: 10px 0 0 10px; }
+        .doc-list td:last-child { border-right: 1px solid #232a35; border-radius: 0 10px 10px 0; }
+
+        .vpn-alert { 
+            color: var(--danger); 
+            background: rgba(231, 76, 60, 0.1); 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            font-size: 11px; 
+        }
+
+        .btn-action { 
+            padding: 10px 20px; 
+            border-radius: 6px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 800; 
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .btn-approve { background: var(--success); color: #000; }
+        .btn-reject { background: var(--danger); color: #fff; }
+        .btn-approve:hover, .btn-reject:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+        /* Report Sidebar */
+        .report-stat { margin-bottom: 25px; border-bottom: 1px solid #222; padding-bottom: 15px; }
+        .stat-val { font-family: 'JetBrains Mono'; font-size: 24px; display: block; color: var(--shield-blue); }
+        .stat-lab { font-size: 11px; color: #555; text-transform: uppercase; }
+
+    </style>
+</head>
+<body>
+
+    <div id="legalGate" class="legal-lock">
+        <div class="lock-container">
+            <div style="font-size: 40px; margin-bottom: 15px;">⚖️</div>
+            <h2 style="color: var(--shield-blue); margin: 0;">GLOBAL COMPLIANCE</h2>
+            <p style="color: #555; font-size: 12px; margin-bottom: 30px;">AUDITORIA JURÍDICA E KYC - ACESSO RESTRITO</p>
+            <input type="password" id="legalKey" class="key-input" placeholder="ACCESS KEY" onkeypress="handleEnter(event)">
+            <br>
+            <button onclick="unlockLegal()" class="btn-approve" style="width: 100%; padding: 18px; font-size: 14px;">AUTENTICAR CREDENCIAIS</button>
+        </div>
+    </div>
+
+    <header class="header-compliance">
+        <div>
+            <h1>Compliance & <span style="color: var(--shield-blue);">KYC Center</span></h1>
+            <p class="subtitle">Gestão de Risco e Blindagem Jurisdicional</p>
+        </div>
+        <div class="status-badge">LICENÇA: OPERACIONAL (CURAÇAO v4.0)</div>
+    </header>
+
+    <div class="audit-grid">
+        <div class="audit-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0;">Fila de Verificação de Alta Prioridade</h3>
+                <span style="font-size: 12px; color: #555;">Sincronizado via Webhook <span id="syncTime">...</span></span>
+            </div>
+            <table class="doc-list">
+                <thead>
+                    <tr>
+                        <th>Usuário (Hash)</th>
+                        <th>Documentação</th>
+                        <th>Carimbo de Data</th>
+                        <th>Análise de IP</th>
+                        <th>Comando</th>
+                    </tr>
+                </thead>
+                <tbody id="kycQueue">
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="audit-card">
+            <h3 style="margin-bottom: 30px; font-size: 16px;">Monitor de Integridade</h3>
+            
+            <div class="report-stat">
+                <span class="stat-lab">Taxa de Verificação</span>
+                <span class="stat-val">99.8%</span>
+            </div>
+            <div class="report-stat">
+                <span class="stat-lab">Bloqueios de Jurisdição</span>
+                <span class="stat-val" style="color: var(--danger);">0</span>
+            </div>
+            <div class="report-stat">
+                <span class="stat-lab">Patrimônio Auditado</span>
+                <span class="stat-val" style="color: var(--success);">R$ 1.28B</span>
+            </div>
+
+            <button class="btn-action" style="background: var(--shield-blue); color: #000; width: 100%; padding: 18px; margin-top: 20px;" onclick="genLegalReport()">
+                SOLICITAR RELATÓRIO FISCAL
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const MASTER_PASS = "16146178721";
+
+        function handleEnter(e) { if(e.key === 'Enter') unlockLegal(); }
+
+        function unlockLegal() {
+            const pass = document.getElementById('legalKey').value;
+            if(pass === MASTER_PASS) {
+                document.getElementById('legalGate').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('legalGate').style.display = 'none';
+                    initCompliance();
+                }, 500);
+            } else {
+                alert("ACESSO NEGADO. TENTATIVA REGISTRADA NO BANCO DE DADOS FEDERAL.");
+            }
+        }
+
+        function initCompliance() {
+            document.getElementById('syncTime').innerText = new Date().toLocaleTimeString();
+            populateQueue();
+        }
+
+        function populateQueue() {
+            const users = [
+                {id: "0x9921_AF", doc: "PASSPORT_EU.PDF", date: "02/03/2026", risk: "SUSPICIOUS (VPN)"},
+                {id: "0x4482_BR", doc: "CNH_DIGITAL.JPG", date: "02/03/2026", risk: "SECURE"},
+                {id: "0x1120_US", doc: "ID_CARD.PNG", date: "02/03/2026", risk: "SECURE"}
+            ];
+
+            const tbody = document.getElementById('kycQueue');
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td><strong style="font-family:'JetBrains Mono'">${u.id}</strong></td>
+                    <td><a href="#" style="color: var(--shield-blue); text-decoration: none;">📄 ${u.doc}</a></td>
+                    <td>${u.date}</td>
+                    <td><span class="${u.risk === 'SECURE' ? '' : 'vpn-alert'}">${u.risk === 'SECURE' ? '🟢 LIMPO' : '⚠️ ' + u.risk}</span></td>
+                    <td>
+                        <button class="btn-action btn-approve" onclick="verify(true)">APROVAR</button>
+                        <button class="btn-action btn-reject" onclick="verify(false)">NEGUE</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function verify(status) {
+            alert(status ? "SMART CONTRACT ATUALIZADO: SAQUE LIBERADO." : "STATUS: CONTA BLOQUEADA PARA INVESTIGAÇÃO.");
+        }
+
+        function genLegalReport() {
+            const btn = event.target;
+            btn.innerText = "GERANDO PDF CRIPTOGRAFADO...";
+            setTimeout(() => {
+                alert("RELATÓRIO DE CONFORMIDADE PRONTO PARA DOWNLOAD.");
+                btn.innerText = "SOLICITAR RELATÓRIO FISCAL";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>SPORTS CONTROL | ELITE COMMAND CENTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --sport-green: #00ff88; 
+            --bg-dark: #05070a; 
+            --card-bg: #0f1218;
+            --accent-blue: #00d1ff; 
+            --gold: #f3ba2f; 
+            --danger: #ff4757;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+
+        body { 
+            background: var(--bg-dark); 
+            color: #e0e0e0; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Scanline Effect - Identidade Visual Maicon Sanches */
+        body::after {
+            content: " ";
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 3px, 3px 100%;
+            z-index: 9999; pointer-events: none;
+        }
+
+        .sports-wrapper { max-width: 1400px; margin: 40px auto; padding: 0 20px; }
+
+        /* Header Estilo Terminal */
+        .header-sports { 
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 6px solid var(--sport-green);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .header-sports h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -1px; color: #fff; }
+        .header-sports p { margin: 5px 0 0; color: #666; font-size: 14px; }
+
+        /* Grade de Operação */
+        .market-grid { display: grid; grid-template-columns: 1fr 380px; gap: 25px; }
+
+        @media (max-width: 1100px) { .market-grid { grid-template-columns: 1fr; } }
+
+        .card-live { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        /* Tabela de Odds Profissional */
+        .live-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: 15px; }
+        .live-table th { text-align: left; color: #555; font-size: 11px; padding: 10px 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .live-table td { background: rgba(255,255,255,0.02); padding: 18px 15px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .live-table td:first-child { border-left: 1px solid var(--border); border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .live-table td:last-child { border-right: 1px solid var(--border); border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+        .odd-badge { 
+            background: #1a1f26; 
+            color: var(--gold); 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            font-weight: 700; 
+            font-family: 'JetBrains Mono', monospace;
+            cursor: pointer; 
+            border: 1px solid #333;
+            margin-right: 5px;
+            display: inline-block;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .odd-badge:hover { border-color: var(--gold); background: var(--gold); color: #000; transform: translateY(-2px); }
+
+        /* Painel de Controle de Lucro */
+        .margin-panel { 
+            background: var(--card-bg); 
+            border-radius: 12px; 
+            padding: 30px; 
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--gold);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .margin-slider { 
+            width: 100%; margin: 25px 0; accent-color: var(--gold); cursor: pointer;
+        }
+
+        /* Botões de Comando */
+        .btn-action { 
+            background: var(--sport-green); color: #000; border: none; padding: 16px; 
+            border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; 
+            text-transform: uppercase; font-size: 12px; letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .btn-action:hover { filter: brightness(1.1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.3); transform: scale(1.02); }
+        
+        .btn-suspend { background: var(--danger); color: #fff; }
+        .btn-suspend:hover { box-shadow: 0 0 20px rgba(255, 71, 87, 0.4); }
+
+        /* Overlay de Segurança de Elite */
+        .gate-keeper { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #05070a; z-index: 10000; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+
+        .gate-card {
+            background: var(--card-bg); padding: 50px; border-radius: 20px; 
+            border: 1px solid var(--sport-green); text-align: center;
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.1);
+        }
+
+        .pulse-dot {
+            height: 10px; width: 10px; background-color: var(--sport-green);
+            border-radius: 50%; display: inline-block; margin-right: 8px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* Status Pills */
+        .status-pill {
+            font-size: 10px; padding: 2px 8px; border-radius: 4px;
+            background: rgba(0, 255, 136, 0.1); color: var(--sport-green);
+            font-weight: bold; border: 1px solid var(--sport-green);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="sportsGate" class="gate-keeper">
+        <div class="gate-card">
+            <h1 style="color: var(--sport-green); margin-bottom: 5px;">SPORTSBOOK MASTER</h1>
+            <p style="color: #555; font-size: 12px; margin-bottom: 30px;">AUTHORIZATION REQUIRED: COMMAND 14</p>
+            
+            <input type="password" id="sportsPass" placeholder="CHAVE MESTRE" 
+                   style="padding: 18px; background: #000; border: 1px solid #333; color: var(--sport-green); 
+                          text-align: center; width: 300px; border-radius: 10px; font-family: 'JetBrains Mono';
+                          font-size: 20px; margin-bottom: 20px; outline: none;">
+            <br>
+            <button onclick="unlockSports()" class="btn-action" style="width: 300px;">VALIDAR IDENTIDADE</button>
+        </div>
+    </div>
+
+    <div class="sports-wrapper">
+        <header class="header-sports">
+            <div>
+                <h1>GESTÃO DE MERCADOS <span class="status-pill">LIVE ENGINE</span></h1>
+                <p>Monitorização em tempo real via Sportradar API v4.2</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="margin-bottom: 5px;"><span class="pulse-dot"></span> <span style="color: var(--sport-green); font-weight: bold; font-family: 'JetBrains Mono';">SINCRO ATIVA</span></div>
+                <small style="color: #444; font-family: 'JetBrains Mono';">LATÊNCIA: 42ms | BUFFER: 5s</small>
+            </div>
+        </header>
+
+        
+
+        <div class="market-grid">
+            <div class="card-live">
+                <h3 style="margin-top:0; display: flex; align-items: center; gap: 10px;">
+                    ⚽ MERCADOS EM ABERTO
+                </h3>
+                <table class="live-table">
+                    <thead>
+                        <tr>
+                            <th>CONFRONTO / COMPETIÇÃO</th>
+                            <th>SCORE</th>
+                            <th>TIME</th>
+                            <th>ODDS (HOME/DRAW/AWAY)</th>
+                            <th>VOL. GLOBAL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="liveFeed">
+                        <tr>
+                            <td>
+                                <strong>Real Madrid vs Barcelona</strong><br>
+                                <small style="color:#555">La Liga - Espanha</small>
+                            </td>
+                            <td style="color: var(--gold); font-weight: 800; font-family: 'JetBrains Mono'; font-size: 18px;">2 - 1</td>
+                            <td>72'</td>
+                            <td>
+                                <span class="odd-badge">1.85</span>
+                                <span class="odd-badge">3.40</span>
+                                <span class="odd-badge">4.20</span>
+                            </td>
+                            <td style="font-family: 'JetBrains Mono'; font-weight: bold;">R$ 1.242.000</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>Flamengo vs Palmeiras</strong><br>
+                                <small style="color:#555">Série A - Brasil</small>
+                            </td>
+                            <td style="color: var(--gold); font-weight: 800; font-family: 'JetBrains Mono'; font-size: 18px;">0 - 0</td>
+                            <td>15'</td>
+                            <td>
+                                <span class="odd-badge">2.10</span>
+                                <span class="odd-badge">3.10</span>
+                                <span class="odd-badge">2.90</span>
+                            </td>
+                            <td style="font-family: 'JetBrains Mono'; font-weight: bold;">R$ 450.800</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="margin-panel">
+                <h3 style="margin-top:0;">CENTRAL DE MARGEM</h3>
+                <p style="font-size: 12px; color: #666; line-height: 1.6;">
+                    Ajuste a retenção da casa (Vig). Quanto maior a margem, menores as odds oferecidas ao cliente, protegendo o lucro da BET SOCIAL.
+                </p>
+                
+                <div style="background: #000; padding: 20px; border-radius: 10px; margin: 20px 0; border: 1px solid #222;">
+                    <div style="font-size: 11px; color: var(--gold); text-transform: uppercase;">Retenção Automática</div>
+                    <div style="font-size: 42px; color: #fff; font-weight: 800; font-family: 'JetBrains Mono';" id="marginVal">8.0%</div>
+                </div>
+
+                <input type="range" min="3" max="15" step="0.5" value="8" class="margin-slider" id="marginRange" oninput="updateMargin(this.value)">
+                
+                <button class="btn-action" onclick="saveSettings()">APLICAR À TODA REDE</button>
+                <button class="btn-action btn-suspend" onclick="suspendAll()">⚠️ SUSPENSÃO DE EMERGÊNCIA</button>
+                
+                <div style="margin-top: 25px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px dashed #333;">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
+                        <span>Arbitragem AI:</span> <span style="color: var(--danger)">OFF</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px;">
+                        <span>Limite/Ticket:</span> <span>R$ 50.000</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                        <span>Auto-Hedging:</span> <span style="color: var(--sport-green)">ON</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SPORTS_KEY = "16146178721";
+
+        function unlockSports() {
+            const entry = document.getElementById('sportsPass').value;
+            if(entry === SPORTS_KEY) {
+                document.getElementById('sportsGate').style.opacity = '0';
+                setTimeout(() => document.getElementById('sportsGate').style.display = 'none', 500);
+            } else {
+                alert("ACESSO AO SPORTSBOOK NEGADO. TENTATIVA REGISTRADA.");
+            }
+        }
+
+        function updateMargin(val) {
+            document.getElementById('marginVal').innerText = parseFloat(val).toFixed(1) + "%";
+        }
+
+        function saveSettings() {
+            const m = document.getElementById('marginRange').value;
+            // Efeito visual de salvamento
+            const btn = event.target;
+            btn.innerText = "ATUALIZANDO...";
+            setTimeout(() => {
+                btn.innerText = "APLICAR À TODA REDE";
+                alert(`SUCESSO: Algoritmo recalibrado para margem de ${m}%.`);
+            }, 800);
+        }
+
+        function suspendAll() {
+            if(confirm("ATENÇÃO MAICON: Confirmar suspensão total de mercados? Isso impacta a liquidez imediata.")) {
+                document.body.style.filter = "grayscale(1) contrast(1.2)";
+                alert("COMANDO ENVIADO: Todos os mercados estão em estado de 'SUSPENDED'.");
+            }
+        }
+
+        // Simulação Ultra-Realista de Odds Fluctuating
+        setInterval(() => {
+            const badges = document.querySelectorAll('.odd-badge');
+            badges.forEach(b => {
+                if(Math.random() > 0.85) {
+                    const up = Math.random() > 0.5;
+                    b.style.color = up ? '#00ff88' : '#ff4757';
+                    b.style.borderColor = up ? '#00ff88' : '#ff4757';
+                    
+                    setTimeout(() => {
+                        b.style.color = 'var(--gold)';
+                        b.style.borderColor = '#333';
+                    }, 1000);
+                }
+            });
+        }, 2000);
+    </script>
+</body>
+</html>

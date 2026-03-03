@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>ADS COMMAND | HQ DOMINAÇÃO GLOBAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --fb-blue: #1877f2; 
+            --go-red: #ea4335; 
+            --kw-orange: #ff5000; 
+            --gold: #d4af37; 
+            --bg: #020406;
+            --card-bg: rgba(17, 17, 17, 0.7);
+            --accent: #2ecc71;
+        }
+
+        * { box-sizing: border-box; transition: all 0.25s ease; }
+
+        body { 
+            background: var(--bg); 
+            color: #f0f0f0; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 30px;
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        /* Header de Comando */
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3); 
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        h1 { 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: -1px; 
+            margin: 0;
+            background: linear-gradient(90deg, #fff, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-tag {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 8px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--gold);
+        }
+
+        /* Grid Dinâmico */
+        .grid-ads { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 25px; 
+        }
+
+        .ad-card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05); 
+            padding: 25px; 
+            border-radius: 20px; 
+            position: relative; 
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .ad-card::after {
+            content: ""; position: absolute; top: 0; right: 0; width: 60px; height: 60px;
+            background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.05) 50%);
+        }
+
+        .status-on { 
+            background: rgba(46, 204, 113, 0.15);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; text-shadow: 0 0 10px var(--accent); }
+            100% { opacity: 0.6; }
+        }
+
+        .metric-group { margin: 20px 0; }
+        
+        .metric { 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.2em; 
+            font-weight: 700; 
+            margin: 5px 0; 
+        }
+
+        .metric-label { 
+            font-size: 0.75em; 
+            color: #666; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+        }
+
+        .btn-control { 
+            padding: 12px; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 800; 
+            width: 100%; 
+            margin-top: 15px;
+            text-transform: uppercase;
+            font-size: 0.85em;
+        }
+
+        .btn-control:hover { 
+            transform: translateY(-3px); 
+            filter: brightness(1.2);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Tabela de Aquisição Consolidada */
+        .consolidated-box { 
+            margin-top: 40px; 
+            background: #0a0a0a; 
+            padding: 35px; 
+            border-radius: 24px; 
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 15px; }
+        th { color: #555; font-size: 0.8em; text-transform: uppercase; padding: 10px 20px; }
+        td { background: #111; padding: 20px; font-weight: 600; }
+        td:first-child { border-radius: 12px 0 0 12px; border-left: 2px solid var(--gold); }
+        td:last-child { border-radius: 0 12px 12px 0; text-align: right; color: var(--gold); }
+
+        .roi-badge { 
+            background: rgba(46, 204, 113, 0.1); 
+            color: var(--accent); 
+            padding: 5px 12px; 
+            border-radius: 6px; 
+            font-family: 'JetBrains Mono'; 
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>OMNICHANNEL CONTROL <span style="font-size: 0.5em; vertical-align: middle; color: #444;">V3.2</span></h1>
+            <p style="margin: 5px 0 0; color: #666; font-size: 0.9em;">Monitoramento de Aquisição em Tempo Real</p>
+        </div>
+        <div class="user-tag">
+            <span style="color: #666;">OPERADOR:</span> MAICON SANCHES <span style="color: var(--gold);">16146178721</span>
+        </div>
+    </header>
+
+    <div class="grid-ads">
+        <div class="ad-card" style="border-top: 4px solid var(--fb-blue);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h3>Facebook/Instagram</h3>
+                <span class="status-on">ATIVO</span>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Investimento (24h)</div>
+                <div class="metric">R$ 1.250,00</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">FTDs (Depósitos)</div>
+                <div class="metric" style="color: var(--accent);">84</div>
+            </div>
+            <button class="btn-control" style="background: var(--fb-blue); color: white;">Escalar Campanha</button>
+        </div>
+
+        <div class="ad-card" style="border-top: 4px solid var(--go-red);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h3>Google/YouTube</h3>
+                <span class="status-on">ATIVO</span>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Investimento (24h)</div>
+                <div class="metric">R$ 800,00</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">FTDs (Depósitos)</div>
+                <div class="metric" style="color: var(--accent);">42</div>
+            </div>
+            <button class="btn-control" style="background: var(--go-red); color: white;">Otimizar Lances</button>
+        </div>
+
+        <div class="ad-card" style="border-top: 4px solid var(--kw-orange);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h3>TikTok/Kwai</h3>
+                <span class="status-on">ATIVO</span>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">Investimento (24h)</div>
+                <div class="metric">R$ 2.100,00</div>
+            </div>
+            <div class="metric-group">
+                <div class="metric-label">FTDs (Depósitos)</div>
+                <div class="metric" style="color: var(--accent);">156</div>
+            </div>
+            <button class="btn-control" style="background: var(--kw-orange); color: white;">Rotacionar Criativos</button>
+        </div>
+    </div>
+
+    <div class="consolidated-box">
+        <h2 style="margin-top: 0; letter-spacing: -1px;">Métricas de Eficiência Global</h2>
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Plataforma</th>
+                    <th>CPA Médio</th>
+                    <th>Lucro Líquido</th>
+                    <th>ROI Consolidado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Meta Ads Group</td>
+                    <td>R$ 14,88</td>
+                    <td style="color: var(--accent);">+ R$ 8.400,00</td>
+                    <td><span class="roi-badge">6.7x</span></td>
+                </tr>
+                <tr>
+                    <td>Google Search/Video</td>
+                    <td>R$ 19,04</td>
+                    <td style="color: var(--accent);">+ R$ 3.200,00</td>
+                    <td><span class="roi-badge">4.0x</span></td>
+                </tr>
+                <tr>
+                    <td>TikTok Viral Flow</td>
+                    <td>R$ 13,46</td>
+                    <td style="color: var(--accent);">+ R$ 15.600,00</td>
+                    <td><span class="roi-badge">7.4x</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Simulação de pulso de dados (atualiza os números levemente para parecer vivo)
+        setInterval(() => {
+            const metrics = document.querySelectorAll('.metric');
+            metrics.forEach(m => {
+                if(m.innerText.includes('R$')) return;
+                let val = parseInt(m.innerText);
+                if(Math.random() > 0.8) {
+                    m.innerText = val + 1;
+                    m.style.color = "var(--gold)";
+                    setTimeout(() => m.style.color = "var(--accent)", 500);
+                }
+            });
+        }, 3000);
+    </script>
+
+</body>
+</html>

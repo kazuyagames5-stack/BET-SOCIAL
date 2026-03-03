@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>UX COMMAND | BET SOCIAL HQ</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --gold: #f3ba2f; 
+            --gold-glow: rgba(243, 186, 47, 0.3);
+            --bg: #05070a; 
+            --card: #0f1218; 
+            --blue: #00d4ff; 
+            --accent: #00ff88;
+            --danger: #ff4757;
+            --glass: rgba(20, 23, 28, 0.8);
+        }
+
+        * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
+
+        body { 
+            background: var(--bg); 
+            color: #e2e2e2; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Overlay de Autenticação de Elite */
+        .auth-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: radial-gradient(circle at center, #111 0%, #000 100%); 
+            z-index: 10000; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .auth-card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+            text-align: center;
+            box-shadow: 0 0 50px var(--gold-glow);
+        }
+
+        /* Container Principal com Grid Moderno */
+        .manager-container { 
+            max-width: 1100px; 
+            margin: 40px auto; 
+            border: 1px solid #222; 
+            border-radius: 20px; 
+            padding: 40px; 
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        h1 { 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            letter-spacing: -1px; 
+            color: var(--gold); 
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h1::after { content: "LIVE OPS"; font-size: 10px; background: var(--danger); color: white; padding: 2px 8px; border-radius: 4px; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* Blocos de Seção Estilizados */
+        .section-box { 
+            background: #161a21; 
+            border-radius: 12px; 
+            padding: 25px; 
+            margin-bottom: 25px; 
+            border: 1px solid #222;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-box:hover { border-color: var(--blue); transform: scale(1.01); }
+
+        .section-box::before {
+            content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--blue);
+        }
+
+        label { 
+            display: flex; 
+            justify-content: space-between;
+            margin-bottom: 12px; 
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue); 
+        }
+
+        input[type="text"], textarea, select { 
+            width: 100%; 
+            padding: 15px; 
+            background: #0b0e11; 
+            border: 1px solid #333; 
+            color: #fff; 
+            border-radius: 8px; 
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 10px;
+        }
+
+        input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 10px var(--gold-glow); }
+
+        /* Botão de Comando */
+        .btn-update { 
+            background: linear-gradient(135deg, var(--gold) 0%, #b8860b 100%); 
+            color: black; 
+            padding: 20px; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            width: 100%; 
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-update:hover { transform: translateY(-3px); box-shadow: 0 10px 25px var(--gold-glow); filter: brightness(1.1); }
+
+        /* Heatmap Dinâmico */
+        .heatmap-preview { 
+            width: 100%; 
+            height: 200px; 
+            background: url('https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=1000') center;
+            background-size: cover;
+            border-radius: 12px; 
+            position: relative; 
+            border: 2px solid #333;
+            filter: grayscale(0.5) brightness(0.4);
+        }
+
+        .click-point { 
+            position: absolute; 
+            width: 40px; 
+            height: 40px; 
+            background: radial-gradient(circle, rgba(255,50,50,0.9) 0%, rgba(255,200,0,0) 70%); 
+            border-radius: 50%;
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring { 0% { transform: scale(0.5); opacity: 1; } 100% { transform: scale(2); opacity: 0; } }
+
+        .stat-badge { background: #000; padding: 5px 10px; border-radius: 5px; font-size: 11px; color: var(--accent); border: 1px solid var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div id="uiAuth" class="auth-overlay">
+        <div class="auth-card">
+            <h2 style="color: var(--gold); margin-bottom: 5px;">UX COMMAND CENTER</h2>
+            <p style="color: #888; font-size: 12px; margin-bottom: 25px;">MAICON SANCHES - PRIVILEGED ACCESS</p>
+            <input type="password" id="uiPass" placeholder="CHAVE DE ENGENHARIA" 
+                   style="text-align: center; width: 100%; padding: 15px; background: #000; border: 1px solid var(--gold); color: white; border-radius: 8px; font-family: 'JetBrains Mono';">
+            <br><br>
+            <button onclick="unlockUI()" class="btn-update">Sincronizar Interface</button>
+        </div>
+    </div>
+
+    <div class="manager-container">
+        <h1>Dashboard de Retenção</h1>
+
+        <div class="section-box">
+            <label>Banner de Boas-Vindas <span>ATIVO</span></label>
+            <input type="text" id="bannerTitle" value="Resolva sua banca hoje.">
+            <textarea id="bannerDesc" rows="2">Maicon Sanches liberou bônus de 100% para novos generais. Aproveite a liquidez do trilhão.</textarea>
+            
+            <div style="display: flex; gap: 20px; align-items: center; margin-top: 10px;">
+                <div style="flex: 1;">
+                    <label>Cor de Conversão (CTA)</label>
+                    <input type="color" id="ctaColor" value="#f3ba2f" style="height: 45px; width: 100%; border: none; cursor: pointer; background: none;">
+                </div>
+                <div style="flex: 1;">
+                    <label>Intensidade do Brilho</label>
+                    <input type="range" min="0" max="100" value="80">
+                </div>
+            </div>
+        </div>
+
+        <div class="section-box" style="border-left-color: var(--accent);">
+            <label style="color: var(--accent);">Otimização Algorítmica (Lógica da Casa)</label>
+            <select id="gameOrder">
+                <option value="profit">Modo Lucro Máximo (Priorizar RTP 85%)</option>
+                <option value="popular">Modo Viral (Engajamento Orgânico)</option>
+                <option value="retention">Modo Fidelidade (Novidades & Cashbacks)</option>
+            </select>
+            <div style="display: flex; gap: 10px;">
+                <span class="stat-badge">CPU: 12%</span>
+                <span class="stat-badge">LUCRO ESTIMADO: +22%</span>
+            </div>
+        </div>
+
+        <div class="section-box" style="border-left-color: var(--danger);">
+            <label style="color: var(--danger);">Análise de Calor (Live Heatmap)</label>
+            <div class="heatmap-preview">
+                <div class="click-point" style="top: 20%; left: 82%;"></div>
+                <div class="click-point" style="top: 45%; left: 50%;"></div>
+                <div class="click-point" style="top: 10%; left: 15%;"></div>
+            </div>
+            <div style="margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div style="background: #000; padding: 10px; border-radius: 5px; font-size: 12px;">
+                    <span style="color: var(--gold);">TOP CLICK:</span> Botão "Depositar via Pix"
+                </div>
+                <div style="background: #000; padding: 10px; border-radius: 5px; font-size: 12px;">
+                    <span style="color: var(--gold);">ABANDONO:</span> Tela de Cadastro (Fricção alta)
+                </div>
+            </div>
+        </div>
+
+        <button onclick="saveUIChanges()" class="btn-update">Propagar Mudanças na Rede</button>
+    </div>
+
+    <script>
+        const MASTER_PASS = "16146178721";
+
+        function unlockUI() {
+            const pass = document.getElementById('uiPass').value;
+            if(pass === MASTER_PASS) {
+                document.getElementById('uiAuth').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('uiAuth').style.display = 'none';
+                    notify("ACESSO CONCEDIDO: BEM-VINDO, MAICON.");
+                }, 500);
+            } else {
+                alert("ACESSO NEGADO. TENTATIVA REGISTRADA NO LOG FINANCEIRO.");
+            }
+        }
+
+        function saveUIChanges() {
+            const btn = document.querySelector('.btn-update');
+            btn.innerText = "PROPAGANDO... AGUARDE SINCRO";
+            btn.style.opacity = "0.7";
+
+            const config = {
+                title: document.getElementById('bannerTitle').value,
+                desc: document.getElementById('bannerDesc').value,
+                order: document.getElementById('gameOrder').value,
+                cta: document.getElementById('ctaColor').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Simulação de push para a infraestrutura de alta disponibilidade
+            setTimeout(() => {
+                console.log("Configuração enviada para Nginx & Edge Servers:", config);
+                btn.innerText = "MUDANÇAS APLICADAS NA MALHA";
+                btn.style.opacity = "1";
+                alert("SUCESSO! A experiência do usuário foi otimizada em todos os servidores da BET SOCIAL.");
+            }, 1500);
+        }
+
+        function notify(msg) {
+            console.log(`[SYSTEM]: ${msg}`);
+        }
+    </script>
+</body>
+</html>

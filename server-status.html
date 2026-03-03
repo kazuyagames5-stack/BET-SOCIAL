@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>CORE TERMINAL | NÚCLEO OPERACIONAL v4.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --cpu-blue: #00d2ff; 
+            --ram-purple: #9d50bb; 
+            --bg-void: #05070a; 
+            --card-bg: rgba(13, 17, 23, 0.8); 
+            --border-glow: rgba(0, 210, 255, 0.3);
+            --gold: #f3ba2f;
+            --success: #00ff88;
+        }
+
+        * { box-sizing: border-box; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        body { 
+            background: var(--bg-void); 
+            color: #c9d1d9; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Background Atômico */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(circle at 50% 50%, #10141d 0%, #05070a 100%);
+            z-index: -1;
+        }
+
+        .status-wrapper { 
+            width: 95%; 
+            max-width: 1200px; 
+            padding: 40px; 
+            opacity: 0; 
+            transform: translateY(20px); 
+        }
+
+        .status-header { 
+            border-left: 4px solid var(--cpu-blue); 
+            padding-left: 20px; 
+            margin-bottom: 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+        }
+
+        h1 { font-weight: 900; letter-spacing: -1px; margin: 0; font-size: 2.2em; text-transform: uppercase; }
+
+        /* Metrics System */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        
+        .metric-card { 
+            background: var(--card-bg); 
+            border: 1px solid #30363d; 
+            padding: 30px; 
+            border-radius: 20px; 
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .metric-card:hover { border-color: var(--cpu-blue); transform: scale(1.02); box-shadow: 0 0 20px var(--border-glow); }
+
+        .metric-label { font-family: 'JetBrains Mono'; font-size: 0.75em; color: #8b949e; text-transform: uppercase; }
+        .metric-value { font-family: 'JetBrains Mono'; font-size: 3em; font-weight: bold; margin: 15px 0; color: #fff; }
+
+        /* Barra de Carga de Alta Fidelidade */
+        .load-bar { background: #161b22; height: 6px; border-radius: 10px; overflow: hidden; margin-top: 15px; }
+        .load-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, var(--cpu-blue), var(--ram-purple)); 
+            width: 0%; 
+            box-shadow: 0 0 10px var(--cpu-blue);
+        }
+
+        /* Processos - Terminal Style */
+        .process-list { 
+            background: #0d1117; 
+            border-radius: 20px; 
+            padding: 30px; 
+            border: 1px solid #30363d;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .proc-table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono'; font-size: 0.9em; }
+        .proc-table th { text-align: left; padding: 15px; color: var(--cpu-blue); border-bottom: 2px solid #21262d; }
+        .proc-table td { padding: 15px; border-bottom: 1px solid #161b22; }
+
+        /* Botões de Ação */
+        .action-btn {
+            background: transparent; border: 1px solid #30363d; color: #8b949e; 
+            padding: 5px 12px; border-radius: 4px; cursor: pointer;
+        }
+        .action-btn:hover { border-color: var(--success); color: var(--success); }
+
+        .btn-upgrade { 
+            background: linear-gradient(135deg, var(--ram-purple), #6a11cb); 
+            color: white; border: none; padding: 20px; border-radius: 15px; 
+            font-weight: 900; cursor: pointer; width: 100%; font-size: 1.1em;
+            text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 10px 20px rgba(157, 80, 187, 0.3);
+        }
+
+        .btn-upgrade:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(157, 80, 187, 0.5); }
+
+        /* Lock Screen Avançada */
+        .server-lock { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 10000; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; transition: 0.8s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+
+        .lock-content { text-align: center; max-width: 400px; }
+
+        #serverKey { 
+            background: transparent; border: none; border-bottom: 2px solid #333; 
+            color: var(--cpu-blue); font-size: 24px; font-family: 'JetBrains Mono'; 
+            text-align: center; width: 100%; padding: 10px; outline: none; margin-bottom: 30px;
+        }
+        #serverKey:focus { border-color: var(--cpu-blue); }
+
+    </style>
+</head>
+<body>
+
+    <div id="serverLock" class="server-lock">
+        <div class="lock-content">
+            <div style="font-size: 60px; margin-bottom: 20px;">🔒</div>
+            <h1 style="color: var(--cpu-blue); font-weight: 300; letter-spacing: 8px; margin-bottom: 10px;">AUTH_REQUIRED</h1>
+            <p style="color: #444; margin-bottom: 40px;">NÚCLEO MAICON SANCHES - COMANDO 22</p>
+            <input type="password" id="serverKey" placeholder="000-000-000" onkeypress="handleEnter(event)">
+            <button onclick="unlockServer()" class="btn-upgrade">DIFUNDIR CREDENCIAIS</button>
+        </div>
+    </div>
+
+    <div class="status-wrapper" id="mainUI">
+        <header class="status-header">
+            <div>
+                <p style="color: var(--cpu-blue); font-family: 'JetBrains Mono'; margin: 0;">#ESTADO_DO_SISTEMA</p>
+                <h1>NÚCLEO OPERACIONAL</h1>
+            </div>
+            <div style="text-align: right;">
+                <p>UPTIME: <span style="color: var(--success);" id="uptimeClock">32:14:05:12</span></p>
+                <code style="color: #444;">LOC: CH-NODE-01 // 45.122.XX.XXX</code>
+            </div>
+        </header>
+
+        
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">TELEMETRIA DE CPU</div>
+                <div class="metric-value" id="cpuVal">--%</div>
+                <div class="load-bar"><div class="load-fill" id="cpuFill"></div></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">ALOCAÇÃO DE RAM</div>
+                <div class="metric-value" id="ramVal">--GB</div>
+                <div class="load-bar"><div class="load-fill" id="ramFill" style="background: var(--ram-purple);"></div></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">ORÇAMENTO NUVEM (24h)</div>
+                <div class="metric-value" style="color: var(--gold);" id="costVal">R$ 0,00</div>
+                <p style="font-size: 0.7em; color: #555;" id="playerCount">LOAD: 1.240 Ativos</p>
+            </div>
+        </div>
+
+        <div class="process-list">
+            <h3 style="margin-top: 0; color: #fff; font-size: 0.9em; letter-spacing: 2px;">PROCESSOS CRÍTICOS</h3>
+            <table class="proc-table">
+                <thead>
+                    <tr>
+                        <th>CÓDIGO_SERVIÇO</th>
+                        <th>STATUS</th>
+                        <th>THREADS</th>
+                        <th>LATÊNCIA</th>
+                    </tr>
+                </thead>
+                <tbody id="procTableBody">
+                    </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <button class="btn-upgrade" onclick="expandServer()">ATIVAR PROTOCOLO DE ESCALONAMENTO (SCALING 5B)</button>
+        </div>
+    </div>
+
+    <script>
+        const AUTH_SERVER = "16146178721";
+
+        function handleEnter(e) { if(e.key === 'Enter') unlockServer(); }
+
+        function unlockServer() {
+            const val = document.getElementById('serverKey').value;
+            if(val === AUTH_SERVER) {
+                document.getElementById('serverLock').style.transform = "translateY(-100%)";
+                setTimeout(() => {
+                    document.getElementById('mainUI').style.opacity = "1";
+                    document.getElementById('mainUI').style.transform = "translateY(0)";
+                    initSystem();
+                }, 400);
+            } else {
+                alert("ACESSO AO NÚCLEO NEGADO. RASTREIO ATIVADO.");
+            }
+        }
+
+        function initSystem() {
+            // Inicializar Tabela
+            const procs = [
+                {n: "Core_API_v4", t: "32", l: "4ms"},
+                {n: "Payment_PIX_Gate", t: "12", l: "12ms"},
+                {n: "Retention_AI_Bot", t: "08", l: "85ms"}
+            ];
+            
+            document.getElementById('procTableBody').innerHTML = procs.map(p => `
+                <tr>
+                    <td><span style="color:var(--cpu-blue)">></span> ${p.n}</td>
+                    <td style="color: var(--success)">● OPERACIONAL</td>
+                    <td>${p.t}</td>
+                    <td><button class="action-btn">${p.l}</button></td>
+                </tr>
+            `).join('');
+
+            updateLoop();
+            setInterval(updateLoop, 2000);
+        }
+
+        function updateLoop() {
+            // CPU
+            const cpu = Math.floor(Math.random() * 15) + 10;
+            document.getElementById('cpuVal').innerText = cpu + "%";
+            document.getElementById('cpuFill').style.width = cpu + "%";
+
+            // RAM
+            const ram = (Math.random() * (4.8 - 4.1) + 4.1).toFixed(1);
+            document.getElementById('ramVal').innerText = ram + "GB";
+            document.getElementById('ramFill').style.width = (ram / 8 * 100) + "%";
+
+            // Custos (Simulando variação centesimal)
+            const baseCost = 185.40;
+            const variance = (Math.random() * 2).toFixed(2);
+            document.getElementById('costVal').innerText = "R$ " + (baseCost + parseFloat(variance)).toFixed(2);
+        }
+
+        function expandServer() {
+            const confirm = window.confirm("MAICON: Confirmar escalonamento vertical para Meta 5B?");
+            if(confirm) {
+                const btn = document.querySelector('.btn-upgrade');
+                btn.innerText = "ESCALANDO RECURSOS...";
+                btn.style.background = var(--success);
+                
+                setTimeout(() => {
+                    alert("PROTOCOLO EXECUTADO. Servidores replicados na região Suíça.");
+                    btn.innerText = "POTÊNCIA MÁXIMA ATIVA";
+                    btn.style.filter = "hue-rotate(90deg)";
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>

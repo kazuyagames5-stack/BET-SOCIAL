@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>BONUS ENGINE v4.2 | BET SOCIAL MASTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --gold: #f3ba2f; 
+            --bg: #05070a; 
+            --purple: #a349a4; 
+            --purple-glow: rgba(163, 73, 164, 0.3);
+            --text: #e2e8f0; 
+            --card: #11141b;
+            --danger: #ff4757;
+            --success: #00ff88;
+        }
+
+        * { box-sizing: border-box; transition: all 0.25s ease; }
+
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Efeito de Profundidade no Fundo */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(163, 73, 164, 0.05) 0%, transparent 80%);
+            z-index: -1;
+        }
+
+        /* Overlay de Autenticação - Estilo "Vault" */
+        .auth-overlay { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; 
+            z-index: 10000; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-card {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--purple);
+            text-align: center;
+            box-shadow: 0 0 40px var(--purple-glow);
+        }
+
+        /* Header Dinâmico */
+        .header-bonus { 
+            border-bottom: 1px solid #222; 
+            padding: 30px 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            background: rgba(17, 20, 27, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .header-bonus h1 { font-weight: 900; font-size: 1.5rem; margin: 0; letter-spacing: -1px; }
+        .header-bonus p { color: #666; margin: 5px 0 0 0; font-size: 0.85rem; }
+
+        /* Grid de Comando */
+        .grid-bonus { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); 
+            gap: 25px; 
+            padding: 40px; 
+        }
+        
+        .card-config { 
+            background: var(--card); 
+            border: 1px solid #222; 
+            border-radius: 16px; 
+            padding: 30px; 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-config:hover { border-color: var(--purple); transform: translateY(-5px); }
+
+        .card-config h2 { 
+            color: var(--gold); 
+            font-size: 0.9em; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Inputs de Alta Precisão */
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 10px; color: #888; font-size: 0.8em; font-weight: 600; }
+        
+        input, select { 
+            width: 100%; 
+            padding: 14px; 
+            background: #05070a; 
+            border: 1px solid #333; 
+            color: #fff; 
+            border-radius: 8px; 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+        }
+
+        input:focus { border-color: var(--purple); outline: none; box-shadow: 0 0 10px var(--purple-glow); }
+
+        /* Botão de Lançamento (Call to Action) */
+        .btn-create { 
+            background: linear-gradient(135deg, var(--purple), #6c3483); 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 8px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-create:hover { 
+            transform: scale(1.02); 
+            box-shadow: 0 0 30px var(--purple-glow); 
+        }
+
+        /* Live Preview & Status */
+        .live-preview { 
+            background: #05070a; 
+            border-left: 4px solid var(--gold); 
+            padding: 20px; 
+            border-radius: 4px; 
+            margin-top: 15px; 
+            font-size: 0.95em; 
+            line-height: 1.6;
+            font-style: italic;
+            color: #ccc;
+        }
+
+        .status-badge { 
+            background: rgba(0, 255, 136, 0.1); 
+            color: var(--success); 
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-size: 0.75em; 
+            font-weight: 800; 
+            border: 1px solid var(--success);
+            text-transform: uppercase;
+        }
+
+        /* Animação de Pulso para Itens Críticos */
+        .pulse { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 71, 87, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="authBonus" class="auth-overlay">
+        <div class="auth-card">
+            <div style="font-size: 40px; margin-bottom: 20px;">🔑</div>
+            <h1 style="color: var(--gold); margin: 0; letter-spacing: 2px;">RETENTION MASTER</h1>
+            <p style="color: #666; margin-bottom: 30px;">ID: MAICON SANCHES | STATUS: ADMIN</p>
+            <input type="password" id="bonusKey" placeholder="INSIRA A CHAVE MESTRE" style="text-align: center; border-color: var(--purple);">
+            <button onclick="unlockBonus()" class="btn-create" style="margin-top: 20px;">AUTENTICAR COMANDO</button>
+        </div>
+    </div>
+
+    <header class="header-bonus">
+        <div>
+            <h1>Motor de Bônus <span style="color: var(--purple);">v4.2</span></h1>
+            <p>Gerenciamento de Fluxo e Retenção de Banca</p>
+        </div>
+        <div style="text-align: right;">
+            <span class="status-badge">● ANTI-DRENO ATIVO</span>
+            <p style="font-size: 10px; color: #444; margin-top: 5px;">SINC: LIVE-DATABASE</p>
+        </div>
+    </header>
+
+    <main class="grid-bonus">
+        <section class="card-config">
+            <h2><span style="color: var(--purple);">01.</span> PARÂMETROS DA CAMPANHA</h2>
+            
+            <div class="input-group">
+                <label>INTELIGÊNCIA DO BÔNUS</label>
+                <select id="bonusType" onchange="updateMessage()">
+                    <option value="welcome">Welcome Pack (Atrás do 1º Depósito)</option>
+                    <option value="reload">Reload (Recuperação de Inativos)</option>
+                    <option value="loss">Loss Protection (Seguro Anti-Quebra)</option>
+                    <option value="vip">Exclusive VIP (High-Ticket)</option>
+                </select>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="input-group">
+                    <label>ROLLOVER (X)</label>
+                    <input type="number" id="rolloverValue" value="50" oninput="updateImpact()">
+                </div>
+                <div class="input-group">
+                    <label>CONVERSÃO MÁX (R$)</label>
+                    <input type="number" id="maxConv" value="500" oninput="updateImpact()">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>VALOR DO GATILHO (R$)</label>
+                <input type="number" id="triggerValue" value="100" oninput="updateMessage()">
+            </div>
+
+            <button class="btn-create" onclick="launchCampaign()">🚀 EXECUTAR CAMPANHA GLOBAL</button>
+        </section>
+
+        <section class="card-config">
+            <h2><span style="color: var(--purple);">02.</span> PSICOLOGIA DE PERSEGUIÇÃO</h2>
+            
+            <div class="live-preview" id="msgContainer">
+                <strong>COPYWRITING GERADO (PUSH/WA):</strong><br>
+                <span id="msgPreview">"O problema da falta de banca acabou. Maicon libertou um bónus de R$ 100 para você voltar aos 10 milhões!"</span>
+            </div>
+
+            <div style="margin-top: 30px; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px solid #222;">
+                <p style="margin-top: 0; font-weight: bold; font-size: 0.8em; color: var(--gold);">ANÁLISE DE IMPACTO EM TEMPO REAL</p>
+                
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                    <span style="font-size: 0.85em; color: #888;">Depósitos Estimados:</span>
+                    <span id="impactDep" style="color: var(--success); font-weight: bold;">+22.4%</span>
+                </div>
+                
+                <div class="progress-mini" style="background: #333; height: 4px; border-radius: 2px; margin-bottom: 20px;">
+                    <div id="impactBar" style="background: var(--success); width: 72%; height: 100%; border-radius: 2px; box-shadow: 0 0 10px var(--success);"></div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="font-size: 0.85em; color: #888;">Risco de Dreno de Caixa:</span>
+                    <span id="riskLevel" style="color: var(--success); font-weight: bold;">MUITO BAIXO</span>
+                </div>
+            </div>
+
+            <p style="font-size: 11px; color: #555; margin-top: 20px; line-height: 1.4;">
+                * O sistema aplicará automaticamente o algoritmo de "quase-vitoria" para usuários com bônus ativo, aumentando o tempo de permanência (Pilar 13).
+            </p>
+        </section>
+    </main>
+
+    <script>
+        const MASTER_PASS = "16146178721";
+
+        function unlockBonus() {
+            const pass = document.getElementById('bonusKey').value;
+            if(pass === MASTER_PASS) {
+                const overlay = document.getElementById('authBonus');
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.style.display = 'none', 500);
+            } else {
+                alert("⚠️ CHAVE DE COMANDO INVÁLIDA. TENTATIVA REPORTADA.");
+            }
+        }
+
+        function updateMessage() {
+            const val = document.getElementById('triggerValue').value;
+            const type = document.getElementById('bonusType').value;
+            const preview = document.getElementById('msgPreview');
+            
+            const copies = {
+                welcome: `O problema da falta de banca acabou. Maicon liberou R$ ${val} extras para você buscar os 10 milhões no primeiro depósito!`,
+                reload: `Sentiu saudade do lucro? Maicon enviou R$ ${val} de presente para você reativar sua conta agora!`,
+                loss: `Hoje a casa perde. Maicon ativou seu Cashback de R$ ${val}. Recupere tudo o que é seu!`,
+                vip: `Acesso Exclusivo: Maicon selecionou você para um bônus High-Ticket de R$ ${val}. Apenas para Generais.`
+            };
+
+            preview.innerText = `"${copies[type]}"`;
+            updateImpact();
+        }
+
+        function updateImpact() {
+            const roll = parseInt(document.getElementById('rolloverValue').value);
+            const risk = document.getElementById('riskLevel');
+            const bar = document.getElementById('impactBar');
+            
+            // Lógica de cálculo de risco: Rollover baixo = Risco alto
+            if(roll < 20) {
+                risk.innerText = "CRÍTICO";
+                risk.style.color = "var(--danger)";
+                bar.style.width = "95%";
+                bar.style.background = "var(--danger)";
+            } else if(roll < 45) {
+                risk.innerText = "MODERADO";
+                risk.style.color = "var(--gold)";
+                bar.style.width = "60%";
+                bar.style.background = "var(--gold)";
+            } else {
+                risk.innerText = "MUITO BAIXO";
+                risk.style.color = "var(--success)";
+                bar.style.width = "30%";
+                bar.style.background = "var(--success)";
+            }
+        }
+
+        function launchCampaign() {
+            const btn = document.querySelector('.btn-create');
+            btn.innerText = "📡 DISTRIBUINDO BÔNUS...";
+            btn.style.opacity = "0.7";
+            
+            setTimeout(() => {
+                alert("SUCESSO: Campanha injetada no banco de dados. Milhares de clientes estão sendo notificados agora.");
+                btn.innerText = "🚀 EXECUTAR CAMPANHA GLOBAL";
+                btn.style.opacity = "1";
+            }, 1500);
+        }
+
+        // Atalho de teclado para a Chave Mestre
+        document.addEventListener('keypress', (e) => {
+            if(e.key === 'Enter' && document.getElementById('authBonus').style.display !== 'none') {
+                unlockBonus();
+            }
+        });
+    </script>
+</body>
+</html>

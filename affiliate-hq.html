@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>AFFILIATE HQ | ESTRUTURA DE COMANDO 17</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --aff-blue: #00d2ff; 
+            --aff-purple: #3a7bd5; 
+            --bg-dark: #05070a; 
+            --card-bg: rgba(22, 27, 34, 0.7);
+            --gold: #f3ba2f; 
+            --success: #00ff88; 
+            --danger: #ff4757;
+            --border: #30363d;
+        }
+
+        * { box-sizing: border-box; transition: all 0.25s ease; }
+
+        body { 
+            background: var(--bg-dark); 
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(58, 123, 213, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(0, 210, 255, 0.1) 0%, transparent 40%);
+            color: #fff; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .hq-wrapper { max-width: 1400px; margin: auto; padding: 40px 20px; }
+
+        /* Header Futurista */
+        .header-hq { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 30px; 
+            margin-bottom: 40px; 
+        }
+
+        .header-hq h1 { 
+            font-family: 'Orbitron', sans-serif; 
+            font-size: 24px; 
+            letter-spacing: 2px; 
+            margin: 0; 
+            background: linear-gradient(90deg, #fff, var(--aff-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-hq p { color: #8b949e; margin: 5px 0 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Dashboard Grid */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        
+        .stat-box { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border); 
+            padding: 25px; 
+            border-radius: 16px; 
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .stat-box::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--aff-purple), var(--aff-blue));
+            border-radius: 16px 16px 0 0;
+        }
+
+        .stat-box h3 { color: #8b949e; font-size: 12px; text-transform: uppercase; margin: 0; letter-spacing: 1.5px; }
+        
+        .stat-number { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2em; 
+            font-weight: bold; 
+            margin-top: 15px; 
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+        }
+
+        /* Tabela de Inteligência */
+        .affiliate-list { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(12px);
+            border-radius: 20px; 
+            padding: 35px; 
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }
+
+        .aff-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; margin-top: 25px; }
+        .aff-table th { text-align: left; color: #8b949e; padding: 15px; font-size: 13px; text-transform: uppercase; }
+        .aff-table td { background: rgba(255,255,255,0.03); padding: 20px 15px; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .aff-table tr td:first-child { border-radius: 10px 0 0 10px; border-left: 2px solid transparent; }
+        .aff-table tr td:last-child { border-radius: 0 10px 10px 0; }
+        .aff-table tr:hover td { background: rgba(255,255,255,0.08); transform: scale(1.01); }
+        .aff-table tr:hover td:first-child { border-left-color: var(--aff-blue); }
+
+        /* Badges & Buttons */
+        .badge-cpa, .badge-rev { 
+            padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; 
+        }
+        .badge-cpa { background: rgba(0, 210, 255, 0.15); color: var(--aff-blue); border: 1px solid var(--aff-blue); }
+        .badge-rev { background: rgba(243, 186, 47, 0.15); color: var(--gold); border: 1px solid var(--gold); }
+        
+        .btn-pay { 
+            background: var(--success); color: #000; border: none; padding: 10px 20px; 
+            border-radius: 8px; cursor: pointer; font-weight: 800; font-size: 12px;
+        }
+        .btn-pay:hover { box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); transform: translateY(-2px); }
+
+        .btn-link { 
+            background: linear-gradient(135deg, var(--aff-purple), var(--aff-blue));
+            color: white; border: none; padding: 14px 28px; border-radius: 10px; 
+            cursor: pointer; font-weight: bold; font-family: 'Orbitron', sans-serif; font-size: 12px;
+        }
+        .btn-link:hover { filter: brightness(1.2); letter-spacing: 1px; }
+
+        /* Lock Screen High-Security */
+        .hq-lock { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 9999; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center;
+        }
+        
+        #hqPass {
+            background: #111; border: 1px solid #333; color: var(--aff-blue);
+            padding: 20px; width: 320px; border-radius: 12px; font-size: 24px;
+            text-align: center; font-family: 'Orbitron', sans-serif; margin-bottom: 25px;
+            letter-spacing: 5px; outline: none;
+        }
+        #hqPass:focus { border-color: var(--aff-blue); box-shadow: 0 0 20px rgba(0, 210, 255, 0.2); }
+
+        .scanline {
+            width: 100%; height: 2px; background: rgba(0, 210, 255, 0.1);
+            position: absolute; top: 0; animation: scan 4s linear infinite;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+    </style>
+</head>
+<body>
+
+    <div id="hqLock" class="hq-lock">
+        <div class="scanline"></div>
+        <div style="text-align: center; z-index: 10;">
+            <h1 style="color: var(--aff-blue); letter-spacing: 10px; font-family: 'Orbitron'; margin-bottom: 10px;">HQ ACCESS</h1>
+            <p style="color: #444; margin-bottom: 40px; font-weight: bold;">ENCRYPTED BIOMETRIC HANDSHAKE REQUIRED</p>
+            <input type="password" id="hqPass" placeholder="••••••••" onkeypress="checkEnter(event)">
+            <br>
+            <button onclick="unlockHQ()" class="btn-link" style="width: 320px;">INITIALIZE COMMAND</button>
+        </div>
+    </div>
+
+    <div class="hq-wrapper">
+        <header class="header-hq">
+            <div>
+                <h1>UNIT: AFFILIATE CONTROL</h1>
+                <p>Comando Maicon Sanches // Sistema de Atribuição Real-Time</p>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <button class="btn-link" style="background: transparent; border: 1px solid var(--border);" onclick="location.reload()">REFRESH DATA</button>
+                <button class="btn-link" onclick="generateInvite()">+ NOVO LINK ESTRATÉGICO</button>
+            </div>
+        </header>
+
+        <div class="stats-row">
+            <div class="stat-box">
+                <h3>Cliques Totais (24h)</h3>
+                <div class="stat-number" id="cliques">142.903</div>
+            </div>
+            <div class="stat-box">
+                <h3>Registos Ativos</h3>
+                <div class="stat-number" id="registos">12.450</div>
+            </div>
+            <div class="stat-box" style="border-top: none;">
+                <h3 style="color: var(--success);">Conversão FTD</h3>
+                <div class="stat-number" style="color: var(--success);">3.120</div>
+            </div>
+            <div class="stat-box" style="border-top: none;">
+                <h3 style="color: var(--gold);">Payout Disponível</h3>
+                <div class="stat-number" style="color: var(--gold);">R$ 84.500</div>
+            </div>
+        </div>
+
+        <div class="affiliate-list">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-family: 'Orbitron'; font-size: 16px; margin: 0;">RANKING DE PERFORMANCE (TIER 1)</h3>
+                <input type="text" placeholder="Filtrar General..." style="background: #000; border: 1px solid var(--border); color: #fff; padding: 8px 15px; border-radius: 8px; font-size: 12px;">
+            </div>
+            <table class="aff-table">
+                <thead>
+                    <tr>
+                        <th>Parceiro Identificado</th>
+                        <th>Plano Atribuído</th>
+                        <th>Tráfego Bruto</th>
+                        <th>Conversão (FTD)</th>
+                        <th>GGR (Lucro Líquido)</th>
+                        <th>Ação de Comando</th>
+                    </tr>
+                </thead>
+                <tbody id="affBody">
+                    <tr>
+                        <td><strong>@influencer_insta</strong></td>
+                        <td><span class="badge-cpa">CPA R$ 50.00</span></td>
+                        <td>45.000</td>
+                        <td style="font-weight: bold;">850</td>
+                        <td style="color: var(--success); font-family: 'Orbitron';">R$ 170.000</td>
+                        <td><button class="btn-pay" onclick="payAffiliate('@influencer_insta')">LIQUIDAR</button></td>
+                    </tr>
+                    <tr>
+                        <td><strong>YouTube_Canal_Bet</strong></td>
+                        <td><span class="badge-rev">REVSHARE 30%</span></td>
+                        <td>89.000</td>
+                        <td style="font-weight: bold;">1.200</td>
+                        <td style="color: var(--success); font-family: 'Orbitron';">R$ 420.000</td>
+                        <td><button class="btn-pay" onclick="payAffiliate('YouTube_Canal_Bet')">LIQUIDAR</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const MASTER_KEY = "16146178721";
+
+        function checkEnter(e) { if(e.key === 'Enter') unlockHQ(); }
+
+        function unlockHQ() {
+            const val = document.getElementById('hqPass').value;
+            if(val === MASTER_KEY) {
+                document.getElementById('hqLock').style.transition = "transform 1s cubic-bezier(0.87, 0, 0.13, 1)";
+                document.getElementById('hqLock').style.transform = "translateY(-100%)";
+                setTimeout(() => { document.getElementById('hqLock').style.display = 'none'; }, 1000);
+            } else {
+                alert("ACESSO NEGADO. TENTATIVA REGISTRADA NO SISTEMA DE SEGURANÇA.");
+            }
+        }
+
+        function generateInvite() {
+            const name = prompt("Identificação do Novo Afiliado:");
+            if(name) {
+                const code = `MAICON_${Math.floor(1000 + Math.random()*9000)}`;
+                const link = `https://betsocial.com/reg?aff=${code}`;
+                alert(`COMANDO EXECUTADO:\nParceiro: ${name}\nCódigo: ${code}\nLink: ${link}`);
+            }
+        }
+
+        function payAffiliate(name) {
+            const btn = event.target;
+            if(confirm(`Confirmar liquidação de fundos para ${name}?`)) {
+                btn.innerText = "PROCESSANDO...";
+                btn.style.background = "#555";
+                setTimeout(() => {
+                    alert(`SUCESSO: R$ Transparência total. O saldo de ${name} foi enviado para o processador de pagamentos.`);
+                    btn.innerText = "LIQUIDADO";
+                    btn.disabled = true;
+                }, 1500);
+            }
+        }
+    </script>
+</body>
+</html>

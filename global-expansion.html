@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>GLOBAL COMMAND | IMPÉRIO MAICON SANCHES</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --world-blue: #007cf0; 
+            --intl-gold: #ffc107; 
+            --bg-dark: #050608; 
+            --card-bg: rgba(22, 27, 34, 0.7); 
+            --accent-green: #238636;
+            --border-color: #30363d;
+        }
+
+        * { box-sizing: border-box; transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+
+        body { 
+            background: var(--bg-dark); 
+            color: #e6edf3; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #111 0%, #050608 100%);
+        }
+
+        .expansion-container { max-width: 1400px; margin: auto; padding: 40px; }
+
+        /* Cabeçalho Estilo Terminal de Comando */
+        .header-global { 
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 30px; 
+            margin-bottom: 40px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        h1 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-size: 1.5rem; color: var(--world-blue); }
+
+        /* Mapa de Calor Realista */
+        .world-map-container { 
+            background: var(--card-bg); 
+            height: 450px; 
+            border-radius: 20px; 
+            border: 1px solid var(--border-color);
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Simulação de Radar no Mapa */
+        .radar {
+            position: absolute;
+            width: 150px; height: 150px;
+            border: 2px solid var(--world-blue);
+            border-radius: 50%;
+            opacity: 0;
+            animation: pulse-radar 4s infinite;
+        }
+
+        @keyframes pulse-radar {
+            0% { transform: scale(0.5); opacity: 0.8; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        /* Grid de Mercados */
+        .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+        
+        .market-card { 
+            background: var(--card-bg); 
+            border: 1px solid var(--border-color); 
+            padding: 30px; 
+            border-radius: 16px; 
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .market-card:hover { 
+            border-color: var(--world-blue); 
+            transform: translateY(-10px); 
+            box-shadow: 0 20px 40px rgba(0, 124, 240, 0.15);
+        }
+
+        .market-card h3 { margin-top: 0; font-family: 'Orbitron'; font-size: 1.2rem; }
+
+        .currency-status { 
+            background: rgba(0,0,0,0.3); 
+            padding: 15px; 
+            border-radius: 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin: 20px 0; 
+        }
+
+        .rate { font-family: 'Orbitron', monospace; color: var(--intl-gold); font-size: 1.1em; text-shadow: 0 0 10px rgba(255, 193, 7, 0.3); }
+
+        /* Botões de Comando */
+        .btn-activate { 
+            background: var(--world-blue); 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 800; 
+            width: 100%; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-active { 
+            background: transparent; 
+            border: 1px solid var(--accent-green); 
+            color: var(--accent-green);
+            cursor: default;
+        }
+
+        .btn-activate:not(.btn-active):hover { filter: brightness(1.2); box-shadow: 0 0 20px var(--world-blue); }
+
+        /* Configuração Mestre USDT */
+        .config-master { 
+            margin-top: 50px; 
+            padding: 40px; 
+            background: linear-gradient(135deg, rgba(255,193,7,0.05) 0%, rgba(0,0,0,0.5) 100%); 
+            border: 1px solid var(--intl-gold); 
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255, 193, 7, 0.05);
+        }
+
+        .config-master input { 
+            width: 100%; 
+            padding: 15px; 
+            background: #000; 
+            border: 1px solid #333; 
+            color: #0f0; 
+            border-radius: 8px; 
+            font-family: monospace;
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+
+        /* Bloqueio de Segurança Biométrico/Digital */
+        .global-lock { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 10000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            text-align: center;
+        }
+
+        #globalKey { 
+            padding: 20px; background: #0d1117; border: 1px solid var(--world-blue); 
+            color: white; text-align: center; width: 350px; border-radius: 12px; 
+            font-size: 20px; font-family: 'Orbitron'; margin-bottom: 25px;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="globalLock" class="global-lock">
+        <div class="radar" style="top: 20%; left: 45%;"></div>
+        <h1 style="color: var(--world-blue); font-size: 3rem; margin-bottom: 10px;">GLOBAL AUTH</h1>
+        <p style="letter-spacing: 5px; color: #666; margin-bottom: 40px;">PROPRIETÁRIO: MAICON SANCHES</p>
+        <input type="password" id="globalKey" placeholder="CHAVE MESTRE" onkeypress="checkEnter(event)">
+        <br>
+        <button onclick="unlockGlobal()" class="btn-activate" style="width: 350px; background: #fff; color: #000;">VERIFICAR IDENTIDADE</button>
+    </div>
+
+    <div class="expansion-container">
+        <header class="header-global">
+            <div>
+                <h1>Global Command <span style="color: #fff;">v2.5</span></h1>
+                <p style="color: #8b949e; margin-top: 5px;">Módulos de Expansão e Gestão de Fluxo Multi-Moeda</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="background: rgba(35, 134, 54, 0.1); color: var(--accent-green); padding: 5px 15px; border-radius: 20px; font-weight: bold; display: inline-block;">
+                    ● SISTEMA ONLINE
+                </div>
+                <p style="font-size: 0.8rem; color: #8b949e; margin-top: 10px;">BINANCE LIQUIDITY: <span style="color: var(--intl-gold);">CONNECTED</span></p>
+            </div>
+        </header>
+
+        <div class="world-map-container">
+            <div style="position: absolute; top: 20px; left: 20px; z-index: 2;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <div style="width: 12px; height: 12px; background: var(--world-blue); border-radius: 50%;"></div>
+                    <small>DEPÓSITOS EM TEMPO REAL</small>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 12px; height: 12px; background: var(--intl-gold); border-radius: 50%;"></div>
+                    <small>ZONAS DE EXPANSÃO</small>
+                </div>
+            </div>
+            <h2 style="font-family: 'Orbitron'; color: rgba(255,255,255,0.1); font-size: 4rem;">WORLD CORE</h2>
+            <div class="radar"></div>
+        </div>
+
+        <div class="market-grid" id="gridMercados">
+            <div class="market-card">
+                <h3>Brasil (BRL)</h3>
+                <p style="color: #8b949e;">Market Leader - Português (BR)</p>
+                <div class="currency-status">
+                    <span>Paridade:</span>
+                    <span class="rate">R$ 1.00</span>
+                </div>
+                <button class="btn-activate btn-active">ESTRUTURA ATIVA</button>
+            </div>
+
+            <div class="market-card">
+                <h3>Portugal (EUR)</h3>
+                <p style="color: #8b949e;">Europe Gateway - Português (PT)</p>
+                <div class="currency-status">
+                    <span>Cotação:</span>
+                    <span class="rate">€ 1.00 = R$ 6.12</span>
+                </div>
+                <button id="btnPT" class="btn-activate" onclick="activateMarket('Portugal')">ABRIR FRONTEIRA</button>
+            </div>
+
+            <div class="market-card">
+                <h3>México (MXN)</h3>
+                <p style="color: #8b949e;">LatAm Expansion - Espanhol (MX)</p>
+                <div class="currency-status">
+                    <span>Cotação:</span>
+                    <span class="rate">$ 1.00 = R$ 0.32</span>
+                </div>
+                <button id="btnMX" class="btn-activate" onclick="activateMarket('México')">ABRIR FRONTEIRA</button>
+            </div>
+        </div>
+
+        <div class="config-master">
+            <h3 style="color: var(--intl-gold); margin-top: 0; font-family: 'Orbitron';">GATEWAY DE SAQUE (AUTO-CONVERSÃO USDT)</h3>
+            <p style="color: #8b949e;">Todo o lucro de mercados internacionais é convertido em tempo real via API da Binance para <strong>USDT BEP-20</strong> para liquidez imediata.</p>
+            <input type="text" id="walletUSDT" placeholder="0x..." value="bc1qk802dfzgw55eg3xf0s5lyyw6s2p8ks3p5aj95l">
+            <button class="btn-activate" style="background: var(--intl-gold); color: #000;" onclick="saveConfig()">ATUALIZAR ENDEREÇO DE LIQUIDEZ</button>
+        </div>
+    </div>
+
+    <script>
+        const AUTH_GLOBAL = "16146178721";
+
+        function checkEnter(e) { if(e.key === 'Enter') unlockGlobal(); }
+
+        function unlockGlobal() {
+            const pass = document.getElementById('globalKey').value;
+            if(pass === AUTH_GLOBAL) {
+                const lock = document.getElementById('globalLock');
+                lock.style.opacity = '0';
+                setTimeout(() => lock.style.display = 'none', 500);
+            } else {
+                alert("ACESSO AO SISTEMA GLOBAL NEGADO. RASTREANDO IP...");
+            }
+        }
+
+        function activateMarket(pais) {
+            const btn = event.target;
+            if(confirm(`Maicon, confirmar abertura estratégica do mercado: ${pais}?`)) {
+                btn.innerText = "SINCROIZANDO...";
+                btn.style.opacity = "0.5";
+                
+                setTimeout(() => {
+                    btn.className = "btn-activate btn-active";
+                    btn.innerText = "MERCADO OPERACIONAL";
+                    btn.onclick = null;
+                    alert(`Gateway ${pais} integrado ao ecossistema Bet Social.`);
+                }, 2000);
+            }
+        }
+
+        function saveConfig() {
+            const wallet = document.getElementById('walletUSDT').value;
+            alert(`Configuração de Recebimento Salva: ${wallet}\n\nO lucro agora flui diretamente para sua custódia.`);
+        }
+    </script>
+</body>
+</html>

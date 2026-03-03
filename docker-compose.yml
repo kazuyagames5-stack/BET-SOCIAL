@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  # O Cérebro das Odds (Pilar 1) - Inteligência Pura
+  odds-engine:
+    image: betsocial/odds-engine:latest
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s # Atualiza um por um para não cair o sistema
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: always
+
+  # O Financeiro (Pilar 2) - O Cofre Blindado
+  financial-gateway:
+    image: betsocial/financial-core:latest
+    environment:
+      - WALLET_BTC=${WALLET_BTC:-bc1qk802dfzgw55eg3xf0s5lyyw6s2p8ks3p5aj95l}
+      - MASTER_KEY=${MASTER_KEY:-16146178721}
+    deploy:
+      replicas: 5
+      placement:
+        constraints: [node.role == manager] # Garante que rode no servidor mestre
+    networks:
+      - secure-financial-net
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+  # O Motor de Jogos (Pilar 13) - Escalabilidade Infinita
+  game-server:
+    image: betsocial/slots-engine:latest
+    ports:
+      - "80:8080" # Porta padrão HTTP para o usuário
+    deploy:
+      mode: replicated
+      replicas: 10
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    networks:
+      - public-net
+      - secure-financial-net # Conecta apenas para validar apostas
+
+# Redes Isoladas: O que é público não toca no que é financeiro diretamente
+networks:
+  public-net:
+    driver: overlay
+  secure-financial-net:
+    internal: true # Esta rede NÃO tem acesso à internet externa (blindagem total)
+    driver: bridge
+
+# Proteção de Identidade
+secrets:
+  master_auth:
+    external: true

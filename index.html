@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0b0e11">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>BET SOCIAL | O Jogo dos 10 Milhões</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #f3ba2f;
+            --gold-hover: #ffcc4d;
+            --bg: #0b0e11;
+            --card-bg: rgba(26, 29, 35, 0.8);
+            --text: #ffffff;
+            --text-muted: #848e9c;
+            --accent: #2ecc71;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding-bottom: 70px; /* Espaço para a Bottom Nav */
+            overflow-x: hidden;
+        }
+
+        /* Header Estilo FinTech */
+        .main-nav { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; 
+            background: rgba(11, 14, 17, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .logo { font-weight: 900; font-size: 20px; color: var(--gold); letter-spacing: -1px; }
+
+        .user-finance { display: flex; align-items: center; gap: 12px; }
+        .balance-gold { font-weight: 700; font-size: 14px; color: var(--gold); background: var(--glass); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--gold); }
+
+        .btn-deposit { 
+            background: var(--gold); color: #000; border: none; padding: 8px 16px; 
+            border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(243, 186, 47, 0.3);
+        }
+
+        /* Banner Hero com Gradiente Profissional */
+        .hero-banner {
+            margin: 15px; border-radius: 16px;
+            background: linear-gradient(135deg, #1e2329 0%, #0b0e11 100%);
+            padding: 30px 20px; position: relative; overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .hero-banner::after {
+            content: ""; position: absolute; top: -50%; right: -10%; width: 200px; height: 200px;
+            background: var(--gold); filter: blur(100px); opacity: 0.15;
+        }
+
+        .banner-content h1 { font-size: 28px; font-weight: 900; margin: 0 0 10px; line-height: 1.1; }
+        .banner-content p { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+        .btn-cta { 
+            background: var(--accent); color: #000; border: none; padding: 12px 24px;
+            border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* Barra de Categorias Horizontal */
+        .category-bar { 
+            display: flex; gap: 10px; padding: 10px 15px; 
+            overflow-x: auto; scrollbar-width: none;
+        }
+        .category-bar::-webkit-scrollbar { display: none; }
+        .category-bar button {
+            white-space: nowrap; background: var(--glass); border: 1px solid var(--border);
+            color: var(--text-muted); padding: 10px 20px; border-radius: 30px;
+            font-size: 12px; font-weight: 700; cursor: pointer;
+        }
+        .category-bar button.active { background: var(--gold); color: #000; border-color: var(--gold); }
+
+        /* Grid de Jogos Ultra Responsivo */
+        .game-grid { 
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 15px; 
+        }
+        
+        .skeleton-card {
+            aspect-ratio: 3/4; background: var(--card-bg); border-radius: 12px;
+            animation: pulse 1.5s infinite ease-in-out;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; }
+        }
+
+        /* Bottom Navigation "App Style" */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; height: 65px;
+            background: rgba(11, 14, 17, 0.95); backdrop-filter: blur(15px);
+            border-top: 1px solid var(--border);
+            display: flex; justify-content: space-around; align-items: center;
+            z-index: 1000;
+        }
+
+        .nav-item { 
+            text-decoration: none; color: var(--text-muted); font-size: 11px;
+            display: flex; flex-direction: column; align-items: center; font-weight: 600;
+        }
+        .nav-item.active { color: var(--gold); }
+        .nav-item::before { content: "⦿"; font-size: 18px; margin-bottom: 2px; }
+
+        /* Estilização para Mobile Extremo */
+        @media (max-width: 400px) {
+            .game-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body class="dark-theme">
+
+    <header class="main-nav">
+        <div class="logo">BET SOCIAL <span style="font-size: 10px; vertical-align: middle; opacity: 0.5;">HQ</span></div>
+        <div class="user-finance">
+            <span id="userBalance" class="balance-gold">R$ 0,00</span>
+            <button class="btn-deposit" onclick="openDeposit()">DEPOSITAR</button>
+        </div>
+    </header>
+
+    <section class="hero-banner">
+        <div class="banner-content">
+            <h1>Resolva sua banca hoje.</h1>
+            <p>Maicon Sanches liberou bônus de 100% para novos generais.</p>
+            <button class="btn-cta" onclick="quickPlay()">JOGAR AGORA 🔥</button>
+        </div>
+    </section>
+
+    <main class="game-container">
+        <div class="category-bar">
+            <button class="active" onclick="filterCategory(this)">🔥 POPULARES</button>
+            <button onclick="filterCategory(this)">🐯 SLOTS</button>
+            <button onclick="filterCategory(this)">⚽ ESPORTES</button>
+            <button onclick="filterCategory(this)">🃏 CASSINO AO VIVO</button>
+        </div>
+        
+        <div id="gameGrid" class="game-grid">
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active">Início</a>
+        <a href="#" class="nav-item">Explorar</a>
+        <a href="#" class="nav-item" style="color:var(--accent)">Ganhar</a>
+        <a href="#" class="nav-item">Perfil</a>
+    </nav>
+
+    <script>
+        // Inteligência de UI - Simulação de Carregamento Assíncrono do Pilar 13
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("BET SOCIAL HQ - SISTEMA OPERACIONAL");
+            
+            // Simula o tempo de resposta dos seus servidores Docker Nginx
+            setTimeout(() => {
+                const grid = document.getElementById('gameGrid');
+                grid.innerHTML = ''; // Limpa os skeletons
+                
+                // Gera 12 cards de jogo simulados
+                for(let i=1; i<=12; i++) {
+                    const card = document.createElement('div');
+                    card.className = 'skeleton-card'; // Reutiliza a classe para o shape
+                    card.style.animation = 'none';
+                    card.style.background = `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://picsum.photos/seed/${i+20}/300/400')`;
+                    card.style.backgroundSize = 'cover';
+                    card.style.display = 'flex';
+                    card.style.alignItems = 'flex-end';
+                    card.style.padding = '10px';
+                    card.innerHTML = `<span style="font-size:10px; font-weight:900;">GAME ID: ${1000 + i}</span>`;
+                    grid.appendChild(card);
+                }
+            }, 1500);
+        });
+
+        function filterCategory(btn) {
+            document.querySelectorAll('.category-bar button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function openDeposit() {
+            // Integração futura com o seu financial-gateway
+            alert("Redirecionando para Gateway Seguro...");
+        }
+
+        function quickPlay() {
+            // Lógica de "Hot Game"
+            const balance = document.getElementById('userBalance').innerText;
+            if(balance === "R$ 0,00") {
+                alert("O General Maicon Sanches recomenda um depósito para ativar o bônus de 100%!");
+            }
+        }
+    </script>
+</body>
+</html>

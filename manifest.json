@@ -1,0 +1,69 @@
+{
+  "name": "BET SOCIAL | COMMAND CENTER",
+  "short_name": "BET SOCIAL",
+  "description": "Infraestrutura de alta performance para gestão de ativos e jogos de elite. Domine o sistema.",
+  "id": "com.betsocial.maiconsanches.v4",
+  "start_url": "/index.html?utm_source=pwa&utm_medium=standalone&install=true",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "minimal-ui"],
+  "background_color": "#050508",
+  "theme_color": "#f3ba2f",
+  "orientation": "portrait-primary",
+  "categories": ["finance", "games", "productivity"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-1024.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Painel de Afiliados",
+      "short_name": "Afiliados",
+      "description": "Acesse seus lucros em tempo real",
+      "url": "/afiliados.html",
+      "icons": [{ "src": "/icons/shortcut-stats.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Depositar via BTC/PIX",
+      "short_name": "Depósito",
+      "description": "Injete capital no sistema",
+      "url": "/financeiro/deposito.html",
+      "icons": [{ "src": "/icons/shortcut-cash.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-main.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Interface de Comando Bet Social"
+    },
+    {
+      "src": "/screenshots/mobile-main.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Gestão de Elite Mobile"
+    }
+  ],
+  "prefer_related_applications": false
+}

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORE-INFRA | BET SOCIAL MASTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --neon-blue: #00d4ff; 
+            --neon-glow: rgba(0, 212, 255, 0.4);
+            --bg-dark: #020408; 
+            --card-bg: rgba(15, 18, 24, 0.8);
+            --warning: #ffae00; 
+            --critical: #ff3e3e; 
+            --success: #00ff88;
+        }
+
+        * { box-sizing: border-box; cursor: crosshair; }
+
+        body { 
+            background: var(--bg-dark); 
+            background-image: 
+                radial-gradient(circle at 50% 50%, #0a111a 0%, #020408 100%),
+                linear-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.05) 1px, transparent 1px);
+            background-size: 100% 100%, 30px 30px, 30px 30px;
+            color: #e0e0e0; 
+            font-family: 'JetBrains Mono', monospace; 
+            margin: 0; 
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Efeito de Scanline e Ruído */
+        body::after {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
+            pointer-events: none; z-index: 1000;
+        }
+
+        .header-infra { 
+            border-left: 5px solid var(--neon-blue); 
+            padding: 10px 25px; 
+            margin-bottom: 40px;
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.1), transparent);
+            backdrop-filter: blur(5px);
+        }
+
+        h1 { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; text-transform: uppercase; margin: 0; font-size: 1.5rem; }
+
+        .grid-monitor { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+            gap: 25px; 
+        }
+        
+        /* Cards com Efeito de Profundidade */
+        .server-card { 
+            background: var(--card-bg); 
+            border: 1px solid rgba(0, 212, 255, 0.2); 
+            border-radius: 12px; 
+            padding: 25px; 
+            position: relative; 
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: 0.4s;
+        }
+
+        .server-card:hover {
+            border-color: var(--neon-blue);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px var(--neon-glow);
+        }
+
+        .server-card::before {
+            content: "LIVE_DATA"; position: absolute; top: 10px; right: 10px;
+            font-size: 9px; color: var(--neon-blue); opacity: 0.5;
+        }
+
+        /* Status Indicadores */
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .online { background: var(--success); box-shadow: 0 0 15px var(--success); animation: pulse 1.5s infinite; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Load Bars Avançadas */
+        .load-bar-bg { background: #080a0d; height: 12px; border-radius: 6px; margin: 20px 0; border: 1px solid #1f262f; }
+        .load-bar-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, var(--neon-blue), var(--success)); 
+            width: 0%; 
+            border-radius: 6px;
+            transition: width 1s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            position: relative;
+        }
+
+        /* Botões de Comando */
+        .control-btns { display: grid; gap: 12px; margin-top: 25px; }
+        .btn-action { 
+            padding: 14px; 
+            border: 1px solid var(--neon-blue); 
+            background: rgba(0, 212, 255, 0.05); 
+            color: var(--neon-blue); 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            font-weight: 900; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            transition: 0.3s;
+        }
+
+        .btn-action:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 20px var(--neon-glow); }
+        .btn-emergency { border-color: var(--critical); color: var(--critical); background: rgba(255, 62, 62, 0.05); }
+        .btn-emergency:hover { background: var(--critical); color: #fff; box-shadow: 0 0 25px rgba(255, 62, 62, 0.5); }
+
+        /* Lock Screen High-Tech */
+        .admin-lock { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg-dark); z-index: 10000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .lock-container { text-align: center; padding: 40px; border: 1px solid var(--neon-blue); border-radius: 20px; background: rgba(0,0,0,0.9); }
+
+        #passKey { 
+            padding: 18px; border-radius: 8px; border: 1px solid #333; 
+            background: #000; color: var(--neon-blue); 
+            text-align: center; font-size: 22px; width: 300px;
+            margin: 20px 0; outline: none; font-family: 'JetBrains Mono';
+        }
+
+        #passKey:focus { border-color: var(--neon-blue); box-shadow: 0 0 15px var(--neon-glow); }
+    </style>
+</head>
+<body>
+
+    <div id="infraLock" class="admin-lock">
+        <div class="lock-container">
+            <h1 style="color: var(--neon-blue); margin-bottom: 5px;">KOSMOS TERMINAL</h1>
+            <p style="font-size: 10px; color: #666;">ROOT ACCESS REQUIRED: MAICON SANCHES</p>
+            <input type="password" id="passKey" placeholder="••••••••••••" onkeypress="checkKey(event)">
+            <br>
+            <button onclick="unlockInfra()" class="btn-action" style="width: 100%;">DECRIPTAR ACESSO</button>
+        </div>
+    </div>
+
+    <header class="header-infra">
+        <h1>SISTEMA DE ESCALA <span style="color: var(--neon-blue);">REATIVA</span></h1>
+        <p style="font-size: 12px; opacity: 0.7;">Status: Operando sob Pilar de Alta Disponibilidade v.4.0</p>
+    </header>
+
+    <div class="grid-monitor">
+        <div class="server-card">
+            <h3 style="font-size: 14px; color: var(--neon-blue);">RECURSOS DO CLUSTER</h3>
+            <div class="load-bar-bg"><div class="load-bar-fill" id="cpuBar"></div></div>
+            <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                <span>CPU: <b id="cpuVal">0%</b></span>
+                <span>MEM: <b>2.4TB / 12TB</b></span>
+            </div>
+            <div class="control-btns">
+                <button class="btn-action" onclick="scaleUp()">🚀 EXECUTE SCALE-UP (SWARM)</button>
+            </div>
+        </div>
+
+        <div class="server-card">
+            <h3 style="font-size: 14px; color: var(--neon-blue);">SESSÕES EM TEMPO REAL</h3>
+            <div id="userCount" style="font-size: 3em; font-weight: 900; font-family: 'Orbitron'; color: #fff;">0</div>
+            <p style="font-size: 11px;"><span class="status-dot online"></span> NGINX BALANCER: OPERACIONAL</p>
+            <div class="control-btns">
+                <button class="btn-action" onclick="purgeCache()">🧹 PURGE GLOBAL CDN CACHE</button>
+            </div>
+        </div>
+
+        <div class="server-card">
+            <h3 style="font-size: 14px; color: var(--neon-blue);">INTEGRIDADE FINANCEIRA</h3>
+            <div style="margin: 15px 0;">
+                <p style="font-size: 12px;">LATÊNCIA DB: <span id="latVal" style="color: var(--success);">-- ms</span></p>
+                <p style="font-size: 12px;">SINCRONIA 5B: <span style="color: var(--success);">ESTÁVEL</span></p>
+            </div>
+            <div class="control-btns">
+                <button class="btn-action btn-emergency" onclick="emergencyShutdown()">☢️ PROTOCOLO LOCKDOWN (PÂNICO)</button>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script>
+        const ACCESS_CODE = "16146178721";
+
+        function checkKey(e) { if(e.key === 'Enter') unlockInfra(); }
+
+        function unlockInfra() {
+            const input = document.getElementById('passKey').value;
+            if(input === ACCESS_CODE) {
+                const lock = document.getElementById('infraLock');
+                lock.style.opacity = '0';
+                setTimeout(() => { 
+                    lock.style.display = 'none'; 
+                    initLiveMonitor();
+                }, 800);
+            } else {
+                alert("ACESSO AO NÚCLEO NEGADO. LOG DE TENTATIVA ENVIADO.");
+            }
+        }
+
+        function scaleUp() {
+            console.log("Scaling instances...");
+            alert("MAICON, O COMANDO FOI ENVIADO AO DOCKER SWARM. 10 NOVAS RÉPLICAS EM PROCESSO DE SPIN-UP.");
+        }
+
+        function emergencyShutdown() {
+            if(confirm("PROTOCOLO DE PÂNICO ATIVADO. Isso irá congelar todos os Gateways Financeiros. Confirmar?")) {
+                document.body.style.filter = "grayscale(100%) brightness(50%)";
+                alert("SISTEMA EM ESTADO DE ESTASE. APENAS CHAVE FÍSICA PODE REATIVAR.");
+            }
+        }
+
+        function purgeCache() {
+            alert("CACHE LIMPO EM TODOS OS 42 NODES DA CDN.");
+        }
+
+        // Sistema de Telemetria Dinâmica
+        function initLiveMonitor() {
+            // Animação de entrada dos usuários
+            animateNumber(12482, "userCount");
+
+            setInterval(() => {
+                // Simulação de Oscilação de CPU
+                const cpu = Math.floor(Math.random() * (72 - 35) + 35);
+                document.getElementById('cpuBar').style.width = cpu + "%";
+                document.getElementById('cpuVal').innerText = cpu + "%";
+
+                // Simulação de Latência
+                const lat = Math.floor(Math.random() * (18 - 8) + 8);
+                document.getElementById('latVal').innerText = lat + "ms";
+                
+                // Variância de usuários (+/- 5)
+                const currentU = parseInt(document.getElementById('userCount').innerText.replace('.', ''));
+                document.getElementById('userCount').innerText = (currentU + Math.floor(Math.random() * 11 - 5)).toLocaleString('pt-BR');
+            }, 2500);
+        }
+
+        function animateNumber(target, id) {
+            let start = 0;
+            const timer = setInterval(() => {
+                start += Math.floor(target / 50);
+                if(start >= target) {
+                    start = target;
+                    clearInterval(timer);
+                }
+                document.getElementById(id).innerText = start.toLocaleString('pt-BR');
+            }, 20);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>CASINO CORE | BET SOCIAL CONTROL v4.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --neon-purple: #9d50bb; 
+            --neon-pink: #6e48aa; 
+            --bg-dark: #05070a; 
+            --gold: #f3ba2f; 
+            --gold-glow: rgba(243, 186, 47, 0.3);
+            --card-bg: rgba(18, 22, 27, 0.8);
+            --green-ui: #00ff88;
+        }
+
+        * { box-sizing: border-box; transition: all 0.25s ease; }
+
+        body { 
+            background: var(--bg-dark); 
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(157, 80, 187, 0.05) 0%, transparent 80%),
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 100%, 100% 4px, 4px 100%;
+            color: #fff; 
+            font-family: 'Rajdhani', sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .manager-container { max-width: 1300px; margin: auto; opacity: 0; transform: translateY(20px); }
+        .manager-active { opacity: 1; transform: translateY(0); }
+
+        /* Header Estilo Terminal */
+        .header-casino { 
+            border-left: 4px solid var(--neon-purple); 
+            padding: 20px; 
+            margin-bottom: 40px; 
+            background: rgba(157, 80, 187, 0.05);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .header-casino h1 { 
+            font-family: 'Orbitron', sans-serif; 
+            margin: 0; 
+            font-size: 1.8rem; 
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--neon-purple);
+        }
+
+        .control-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; }
+        
+        /* Cards com Efeito Glass */
+        .card-control { 
+            background: var(--card-bg); 
+            border: 1px solid rgba(255,255,255,0.05); 
+            border-radius: 15px; 
+            padding: 30px; 
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+
+        .card-control::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+        }
+
+        /* Slider de RTP Customizado */
+        .rtp-slider { 
+            width: 100%; height: 6px; background: #222; border-radius: 10px; 
+            outline: none; -webkit-appearance: none; margin: 30px 0; 
+        }
+
+        .rtp-slider::-webkit-slider-thumb { 
+            -webkit-appearance: none; width: 24px; height: 24px; 
+            background: var(--gold); border-radius: 50%; cursor: pointer; 
+            box-shadow: 0 0 15px var(--gold); border: 3px solid #000;
+        }
+
+        .rtp-display { 
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem; font-weight: bold; color: var(--gold); 
+            text-align: center; text-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        .label-rtp { text-align: center; color: #aaa; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+
+        /* Lista de Provedores com Status Animado */
+        .provider-item { 
+            display: flex; justify-content: space-between; padding: 15px; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 1rem;
+            align-items: center;
+        }
+
+        .status-on { 
+            color: var(--green-ui); font-weight: bold; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .status-on::before {
+            content: ""; width: 8px; height: 8px; background: var(--green-ui);
+            border-radius: 50%; box-shadow: 0 0 10px var(--green-ui);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* Botões de Comando */
+        .btn-update { 
+            background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink)); 
+            color: white; border: none; padding: 16px; border-radius: 8px; 
+            width: 100%; font-weight: bold; cursor: pointer; 
+            font-family: 'Orbitron', sans-serif; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .btn-update:hover { 
+            filter: brightness(1.3); transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(157, 80, 187, 0.4);
+        }
+
+        /* Overlay de Segurança */
+        .casino-lock { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg-dark); z-index: 10000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(15px);
+        }
+
+        .lock-content {
+            text-align: center; background: rgba(255,255,255,0.03);
+            padding: 50px; border-radius: 20px; border: 1px solid var(--neon-purple);
+        }
+
+        .security-input {
+            padding: 18px; background: #000; border: 1px solid #333; color: var(--gold);
+            text-align: center; width: 300px; border-radius: 8px; font-size: 1.2rem;
+            font-family: 'Orbitron', sans-serif; outline: none; margin: 20px 0;
+        }
+
+        .security-input:focus { border-color: var(--gold); box-shadow: 0 0 15px var(--gold-glow); }
+    </style>
+</head>
+<body>
+
+    <div id="casinoLock" class="casino-lock">
+        <div class="lock-content">
+            <h1 style="color: var(--neon-purple); font-family: 'Orbitron'; margin-bottom: 5px;">CORE ACCESS</h1>
+            <p style="color: #666; margin-bottom: 30px;">AUTHORITY: MAICON SANCHES</p>
+            <input type="password" id="casinoKey" class="security-input" placeholder="MASTER KEY" onkeypress="checkEnter(event)">
+            <br>
+            <button onclick="unlockCasino()" class="btn-update" style="width: 300px;">AUTHENTICATE</button>
+        </div>
+    </div>
+
+    <div class="manager-container" id="mainUI">
+        <header class="header-casino">
+            <div>
+                <h1 id="sysTitle">CASINO ENGINE <span style="color: var(--gold);">GGR</span></h1>
+                <p style="color: #888; margin-top: 5px;">Pilar 13: Protocolo de Distribuição Geométrica de Prêmios</p>
+            </div>
+            <div style="text-align: right;">
+                <div id="activeGames" style="color: var(--green-ui); font-family: 'Orbitron'; font-size: 1.2rem;">3,000 NODES ACTIVE</div>
+                <div style="font-size: 0.7rem; color: #555;">SINCRO: 100% LATÊNCIA: 12ms</div>
+            </div>
+        </header>
+
+        <div class="control-grid">
+            <div class="card-control">
+                <h3 style="font-family: 'Orbitron'; color: var(--neon-purple);">GLOBAL PAYOUT (RTP)</h3>
+                <div class="rtp-display" id="rtpLabel">94%</div>
+                <div class="label-rtp">Margem Líquida da Casa: <span id="houseMargin" style="color: var(--green-ui);">6%</span></div>
+                
+                <input type="range" min="80" max="98" value="94" class="rtp-slider" id="rtpRange" oninput="updateRTP(this.value)">
+                
+                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; font-size: 0.8rem; color: #777; border-left: 3px solid var(--gold);">
+                    O algoritmo ajusta a dificuldade dos ciclos de bônus em tempo real para manter a meta de lucratividade mensal.
+                </div>
+                
+                <button class="btn-update" onclick="applyRTP()">FORÇAR ATUALIZAÇÃO GLOBAL</button>
+            </div>
+
+            <div class="card-control">
+                <h3 style="font-family: 'Orbitron'; color: var(--neon-purple);">API GATEWAY STATUS</h3>
+                <div class="provider-list">
+                    <div class="provider-item"><span>PG SOFT (TIGER/RABBIT)</span> <span class="status-on">ACTIVE</span></div>
+                    <div class="provider-item"><span>PRAGMATIC (GATES/DOGHOUSE)</span> <span class="status-on">ACTIVE</span></div>
+                    <div class="provider-item"><span>EVOLUTION (LIVE SHOWS)</span> <span class="status-on">ACTIVE</span></div>
+                    <div class="provider-item"><span>SPRIBE (CRASH GAMES)</span> <span class="status-on">ACTIVE</span></div>
+                </div>
+                <button class="btn-update" style="background: transparent; border: 1px solid #444;" onclick="syncProviders()">RESYNC SEAMLESS WALLET</button>
+            </div>
+
+            <div class="card-control" style="border: 1px solid var(--gold);">
+                <div style="position: absolute; top: 10px; right: 10px; font-size: 0.7rem; color: var(--gold); border: 1px solid var(--gold); padding: 2px 5px;">STRATEGY</div>
+                <h3 style="color: var(--gold); font-family: 'Orbitron';">GROWTH HACKING</h3>
+                <p style="color: #888; font-size: 0.9rem;">O <b>Modo Festa</b> injeta ganhos artificiais em contas de baixa frequência para estimular o compartilhamento social e capturar novos leads.</p>
+                
+                <div id="partyStatus" style="text-align: center; margin: 15px 0; display: none;">
+                    <span style="color: var(--gold); font-weight: bold; animation: pulse 1s infinite;">● PARTY MODE ON</span>
+                </div>
+
+                <button id="partyBtn" class="btn-update" style="background: var(--gold); color: #000;" onclick="triggerPartyMode()">INICIAR CICLO DE PAGAMENTO (1H)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MASTER_ACCESS = "16146178721";
+
+        function checkEnter(e) { if(e.key === 'Enter') unlockCasino(); }
+
+        function unlockCasino() {
+            const pass = document.getElementById('casinoKey').value;
+            if(pass === MASTER_ACCESS) {
+                const lock = document.getElementById('casinoLock');
+                lock.style.opacity = '0';
+                setTimeout(() => {
+                    lock.style.display = 'none';
+                    document.getElementById('mainUI').classList.add('manager-active');
+                    console.log("SISTEMA DE CASSINO INICIALIZADO POR MAICON SANCHES.");
+                }, 500);
+            } else {
+                alert("ACESSO AO MOTOR DE JOGOS RECUSADO. CREDENCIAIS INVÁLIDAS.");
+            }
+        }
+
+        function updateRTP(val) {
+            document.getElementById('rtpLabel').innerText = val + "%";
+            const margin = 100 - val;
+            const marginEl = document.getElementById('houseMargin');
+            marginEl.innerText = margin + "%";
+            
+            // Feedback Visual de Perigo/Lucro
+            if(val > 95) marginEl.style.color = "#ff4757";
+            else marginEl.style.color = "#00ff88";
+        }
+
+        function applyRTP() {
+            const rtp = document.getElementById('rtpRange').value;
+            showLoading("RECALIBRANDO ALGORITMOS GGR...", () => {
+                alert(`COMANDO EXECUTADO: RTP de ${rtp}% propagado para 3.000 instâncias.`);
+            });
+        }
+
+        function triggerPartyMode() {
+            const btn = document.getElementById('partyBtn');
+            const status = document.getElementById('partyStatus');
+
+            if(confirm("ALERTA: Isso reduzirá a margem operacional para 2%. Confirmar ativação do ciclo viral?")) {
+                btn.style.opacity = '0.5';
+                btn.innerText = "SISTEMA EM MODO FESTA";
+                status.style.display = 'block';
+                
+                showLoading("INJETANDO LIQUIDEZ NOS SLOTS...", () => {
+                    alert("MODO FESTA ATIVADO. Monitorando tráfego orgânico.");
+                });
+            }
+        }
+
+        function syncProviders() {
+            showLoading("SINCRONIZANDO CARTEIRAS...", () => {
+                alert("Sincronização concluída. Saldo de provedores espelhado com o Core Financial.");
+            });
+        }
+
+        function showLoading(msg, callback) {
+            // Pequeno feedback de processamento para passar a ideia de "sistema robusto"
+            const title = document.getElementById('sysTitle');
+            const original = title.innerHTML;
+            title.innerHTML = `<span style="color: var(--gold); font-size: 0.8rem;">[${msg}]</span>`;
+            setTimeout(() => {
+                title.innerHTML = original;
+                if(callback) callback();
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

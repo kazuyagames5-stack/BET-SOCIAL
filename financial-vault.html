@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>FINANCIAL VAULT | AUDITORIA E LIQUIDEZ</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@300;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --gold: #f3ba2f; 
+            --gold-low: rgba(243, 186, 47, 0.15);
+            --money-green: #00ff88; 
+            --bg-black: #020202; 
+            --dark-card: #0a0a0a; 
+            --border: #1a1a1a;
+            --danger: #ff4757;
+        }
+
+        * { box-sizing: border-box; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        body { 
+            background: var(--bg-black); 
+            color: #fff; 
+            font-family: 'Montserrat', sans-serif; 
+            margin: 0; 
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Efeito de Scanline e Grade Cinética */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 4px, 40px 40px, 40px 40px;
+            z-index: 9998;
+            pointer-events: none;
+        }
+
+        .vault-wrapper { max-width: 1300px; margin: auto; padding: 40px; opacity: 0; transform: translateY(20px); }
+        .vault-visible { opacity: 1; transform: translateY(0); }
+
+        .vault-header { 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 30px; 
+            margin-bottom: 50px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+
+        /* Stats Cards Futuristas */
+        .profit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        
+        .profit-card { 
+            background: var(--dark-card); 
+            border: 1px solid var(--border); 
+            padding: 35px; 
+            border-radius: 20px; 
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profit-card::after {
+            content: ""; position: absolute; top: 0; right: 0; width: 100px; height: 100px;
+            background: radial-gradient(circle at top right, var(--gold-low), transparent);
+        }
+
+        .profit-card:hover { border-color: var(--gold); transform: scale(1.02); }
+
+        .label { color: #666; text-transform: uppercase; font-size: 0.7em; font-weight: 700; letter-spacing: 3px; margin-bottom: 15px; display: block; }
+        .value { font-family: 'JetBrains Mono', monospace; font-size: 2.5em; font-weight: 900; }
+
+        /* Barra de Progresso Inteligente */
+        .goal-container { 
+            background: var(--dark-card); 
+            padding: 40px; 
+            border-radius: 24px; 
+            margin-bottom: 40px; 
+            border: 1px solid var(--border);
+        }
+
+        .progress-bar-bg { 
+            background: #111; 
+            height: 12px; 
+            border-radius: 6px; 
+            margin: 25px 0; 
+            position: relative;
+            box-shadow: inset 0 2px 10px #000;
+        }
+
+        .progress-fill { 
+            background: linear-gradient(90deg, var(--gold), var(--money-green)); 
+            height: 100%; 
+            width: 0%; 
+            border-radius: 6px;
+            box-shadow: 0 0 20px var(--gold-low);
+            position: relative;
+        }
+
+        /* Tabela de Auditoria */
+        .audit-section { background: var(--dark-card); border-radius: 24px; border: 1px solid var(--border); padding: 30px; }
+        .audit-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        .audit-table th { color: var(--gold); padding: 15px; text-align: left; font-size: 0.75em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        .audit-table td { padding: 20px 15px; background: #0d0d0d; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .audit-table td:first-child { border-left: 1px solid var(--border); border-radius: 12px 0 0 12px; }
+        .audit-table td:last-child { border-right: 1px solid var(--border); border-radius: 0 12px 12px 0; }
+
+        .status-badge { 
+            padding: 6px 12px; border-radius: 6px; font-size: 0.65em; font-weight: 900; 
+            background: rgba(0, 255, 136, 0.1); color: var(--money-green); border: 1px solid var(--money-green);
+        }
+
+        /* Botão de Transferência (Protocolo 161) */
+        .btn-withdraw { 
+            background: var(--gold); color: #000; border: none; padding: 22px; border-radius: 12px; 
+            font-weight: 900; cursor: pointer; width: 100%; font-size: 1em; letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(243, 186, 47, 0.2);
+        }
+        .btn-withdraw:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(243, 186, 47, 0.4); filter: brightness(1.1); }
+
+        /* Tela de Bloqueio High-Security */
+        .vault-lock { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 10000; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; backdrop-filter: blur(20px);
+        }
+
+        .key-input { 
+            padding: 20px; background: #050505; border: 1px solid var(--gold); color: var(--gold); 
+            text-align: center; width: 350px; font-size: 1.5em; font-family: 'JetBrains Mono', monospace; 
+            border-radius: 12px; margin-bottom: 25px; outline: none;
+        }
+
+        .key-input:focus { box-shadow: 0 0 30px var(--gold-low); }
+
+        @media print { .vault-lock, .btn-withdraw, .export-btn { display: none; } body { background: #fff; color: #000; } }
+    </style>
+</head>
+<body>
+
+    <div id="vaultGate" class="vault-lock">
+        <div style="text-align: center; max-width: 400px;">
+            <div id="securityIcon" style="font-size: 60px; margin-bottom: 20px; color: var(--gold);">🔒</div>
+            <h1 style="color: var(--gold); letter-spacing: 10px; margin: 0;">VAULT ACCESS</h1>
+            <p style="color: #444; font-size: 0.8em; margin-bottom: 40px; font-weight: 700;">RESERVADO: MAICON SANCHES</p>
+            <input type="password" id="vaultKey" class="key-input" placeholder="PASSKEY" onkeypress="if(event.key==='Enter') unlockVault()">
+            <button onclick="unlockVault()" class="btn-withdraw">DECRIPTAR DADOS</button>
+        </div>
+    </div>
+
+    <div class="vault-wrapper" id="mainVault">
+        <header class="vault-header">
+            <div>
+                <h1 style="color: var(--gold); margin: 0; font-weight: 900; font-size: 2.2em;">AUDITORIA PATRIMONIAL</h1>
+                <p style="color: #666; font-family: 'JetBrains Mono'; font-size: 0.9em;">SYSTEM_CORE_ID: 16146178721 // v5.0.4</p>
+            </div>
+            <div style="text-align: right;">
+                <button class="export-btn" onclick="window.print()" style="background: transparent; color: var(--gold); border: 1px solid var(--gold); padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: 700;">EXPORTAR PROTOCOLO PDF</button>
+            </div>
+        </header>
+
+        <div class="profit-grid">
+            <div class="profit-card">
+                <span class="label">Gross Gaming Revenue (GGR)</span>
+                <div class="value" style="color: #fff;" id="v-ggr">R$ 0,00</div>
+            </div>
+            <div class="profit-card">
+                <span class="label">Total Payouts (Saques)</span>
+                <div class="value" style="color: var(--danger);" id="v-payouts">- R$ 0,00</div>
+            </div>
+            <div class="profit-card" style="border: 1px solid var(--money-green); background: rgba(0, 255, 136, 0.02);">
+                <span class="label">Net Gaming Revenue (NGR)</span>
+                <div class="value" style="color: var(--money-green);" id="v-ngr">R$ 0,00</div>
+            </div>
+        </div>
+
+        <div class="goal-container">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h2 style="margin: 0; font-weight: 900; color: var(--gold);">META DE EXPANSÃO</h2>
+                    <p style="color: #555; font-size: 0.85em; margin: 5px 0 0;">Fundo de Escala: 5.000.000.000,00</p>
+                </div>
+                <div style="text-align: right;">
+                    <span style="color: var(--money-green); font-family: 'JetBrains Mono'; font-weight: 700;" id="v-perc">0.00%</span>
+                </div>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-fill" id="v-bar"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.75em; color: #444; font-weight: bold;">
+                <span>START: R$ 0,00</span>
+                <span>TARGET: R$ 5B</span>
+            </div>
+        </div>
+
+        <div class="audit-section">
+            <h3 style="margin-top: 0; letter-spacing: 2px; color: #fff;">DISTRIBUIÇÃO DE GATEWAYS</h3>
+            <table class="audit-table">
+                <thead>
+                    <tr>
+                        <th>Provedor</th>
+                        <th>Retenção (Halt)</th>
+                        <th>Disponível (Flow)</th>
+                        <th>Taxas Operacionais</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="v-table">
+                    </tbody>
+            </table>
+        </div>
+
+        <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <button class="btn-withdraw" style="background: #111; color: #fff; border: 1px solid #333;" onclick="reconcileSystem()">RECONCILIAR DADOS AGORA</button>
+            <button class="btn-withdraw" onclick="transferToColdStorage()">PROTOCOLAR TRANSFERÊNCIA EXTERNA</button>
+        </div>
+    </div>
+
+    <script>
+        const _X = "16146178721";
+
+        function unlockVault() {
+            const entry = document.getElementById('vaultKey').value;
+            if(entry === _X) {
+                document.getElementById('securityIcon').innerText = "🔓";
+                document.getElementById('vaultGate').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('vaultGate').style.display = 'none';
+                    document.getElementById('mainVault').classList.add('vault-visible');
+                    startLiveAudit();
+                }, 600);
+            } else {
+                alert("ACESSO NEGADO. COORDENADAS RASTREADAS.");
+            }
+        }
+
+        function animateValue(id, target, isCurrency = true) {
+            let start = 0;
+            const duration = 2000;
+            const step = target / (duration / 16);
+            const element = document.getElementById(id);
+
+            const timer = setInterval(() => {
+                start += step;
+                if (start >= target) {
+                    start = target;
+                    clearInterval(timer);
+                }
+                element.innerText = isCurrency 
+                    ? `R$ ${start.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`
+                    : `${start.toFixed(2)}%`;
+            }, 16);
+        }
+
+        function startLiveAudit() {
+            // Valores simulados para demonstração de poder do sistema
+            const ggr = 45280900.50;
+            const payouts = 38120450.25;
+            const ngr = ggr - payouts;
+            const goal = 5000000000;
+            const perc = (ngr / goal) * 100;
+
+            animateValue('v-ggr', ggr);
+            animateValue('v-payouts', payouts);
+            animateValue('v-ngr', ngr);
+            animateValue('v-perc', perc, false);
+
+            document.getElementById('v-bar').style.width = perc + "%";
+
+            // População da Tabela com animação de delay
+            const providers = [
+                {name: "PIX_PAY_PRO", halt: 1200000, flow: 4500000, fee: 85500},
+                {name: "CRYPTO_SUIZA", halt: 0, flow: 1540000, fee: 1200}
+            ];
+
+            const table = document.getElementById('v-table');
+            providers.forEach((p, i) => {
+                setTimeout(() => {
+                    table.innerHTML += `
+                        <tr>
+                            <td><strong style="color:var(--gold)">${p.name}</strong></td>
+                            <td>R$ ${p.halt.toLocaleString()}</td>
+                            <td style="color:var(--money-green)">R$ ${p.flow.toLocaleString()}</td>
+                            <td>R$ ${p.fee.toLocaleString()}</td>
+                            <td><span class="status-badge">LÍQUIDO</span></td>
+                        </tr>
+                    `;
+                }, i * 200);
+            });
+        }
+
+        function reconcileSystem() {
+            alert("Iniciando auditoria cruzada de logs e gateways... Sistema Integrado.");
+        }
+
+        function transferToColdStorage() {
+            const amount = prompt("CONFIRME O MONTANTE PARA COLD STORAGE (OFF-SITE):");
+            if(amount) {
+                const conf = confirm(`Você está prestes a retirar R$ ${amount} do sistema fiduciário para Cold Storage Privado. Confirmar protocolo 161?`);
+                if(conf) alert("TRANSFERÊNCIA EM PROCESSAMENTO VIA REDE SEGURA.");
+            }
+        }
+    </script>
+</body>
+</html>

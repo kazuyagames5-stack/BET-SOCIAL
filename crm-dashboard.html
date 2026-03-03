@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SISTEMA NEURAL CRM - BET SOCIAL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { 
+            --gold: #f3ba2f; 
+            --gold-glow: rgba(243, 186, 47, 0.3);
+            --bg: #05070a; 
+            --card-bg: #0f1218;
+            --blue: #00d4ff; 
+            --success: #00ff88; 
+            --danger: #ff4d4d;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: #e0e0e0; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            overflow: hidden;
+        }
+
+        /* Efeito de Scanline na Tela */
+        body::before {
+            content: " ";
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9999;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .sidebar { 
+            width: 280px; 
+            background: #0a0d12; 
+            height: 100vh; 
+            border-right: 1px solid var(--gold); 
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .content { 
+            flex: 1; 
+            padding: 40px; 
+            height: 100vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Grid de Alta Performance */
+        .crm-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            grid-template-rows: auto auto;
+            gap: 25px; 
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid #1f252e; 
+            padding: 30px; 
+            border-radius: 20px; 
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px var(--gold-glow);
+            transform: translateY(-5px);
+        }
+
+        .card h3 { 
+            color: var(--gold); 
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        /* Status & Badges */
+        .status-badge { 
+            padding: 6px 12px; 
+            border-radius: 6px; 
+            font-size: 0.75em; 
+            font-weight: bold; 
+            letter-spacing: 1px;
+        }
+        .status-active { background: rgba(0, 255, 136, 0.1); color: var(--success); border: 1px solid var(--success); }
+
+        /* Inputs e Botões */
+        textarea { 
+            width: 100%; 
+            background: #05070a; 
+            color: #fff; 
+            border: 1px solid #2d343f; 
+            border-radius: 12px; 
+            padding: 15px; 
+            margin: 15px 0; 
+            resize: none;
+            font-family: inherit;
+        }
+
+        .btn-action { 
+            width: 100%; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            transition: 0.3s;
+        }
+
+        .btn-whatsapp { background: linear-gradient(45deg, #128c7e, #25d366); color: white; }
+        .btn-email { background: linear-gradient(45deg, #0072ff, #00d4ff); color: white; }
+
+        /* Gráfico Contextual */
+        .chart-container { height: 200px; width: 100%; margin-top: 20px; }
+
+        /* Gate de Segurança Minimalista Cyberpunk */
+        .gate-crm { 
+            position: fixed; inset: 0; background: #000; z-index: 10000; 
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column;
+        }
+
+        .lock-box {
+            background: #0a0d12;
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--gold);
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="crmGate" class="gate-crm">
+        <div class="lock-box">
+            <h1 style="color: var(--gold); font-family: 'Orbitron';">AUTHENTICATION REQUIRED</h1>
+            <p style="color: #666; font-size: 0.8em; margin-bottom: 20px;">MAICON'S TERMINAL v4.0</p>
+            <input type="password" id="crmPass" placeholder="DIGITE A CHAVE MESTRA" 
+                   style="padding: 15px; width: 250px; text-align: center; border-radius: 8px; border: 1px solid #333; background: #000; color: var(--gold); font-weight: bold;">
+            <br><br>
+            <button onclick="unlockCRM()" class="btn-action btn-whatsapp" style="width: 250px;">DESBLOQUEAR ACESSO</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div style="padding: 30px; text-align: center;">
+            <div style="width: 80px; height: 80px; background: var(--gold); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+                <span style="color: #000; font-weight: 900; font-size: 2em;">M</span>
+            </div>
+            <h2 style="color: var(--gold); font-family: 'Orbitron'; font-size: 1em;">MAICON CORE</h2>
+            <small style="color: #555;">ID: cyborgzero19</small>
+        </div>
+        <nav style="padding: 20px;">
+            <div style="color: var(--gold); border-left: 3px solid var(--gold); padding: 10px 20px; background: rgba(243, 186, 47, 0.05);">DASHBOARD</div>
+        </nav>
+    </div>
+
+    <div class="content">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <div>
+                <h1 style="margin: 0; font-family: 'Orbitron'; letter-spacing: 3px;">CENTRAL DE RETENÇÃO <span style="color: var(--gold);">PREDITIVA</span></h1>
+                <p style="color: #777;">Foco total na dor do cliente: Transformando leads em lucro real.</p>
+            </div>
+            <div style="text-align: right;">
+                <div id="realTimeClock" style="font-family: 'Orbitron'; color: var(--gold);">00:00:00</div>
+                <small style="color: var(--success);">LINKED TO BET SOCIAL SERVER</small>
+            </div>
+        </header>
+
+        <div class="crm-grid">
+            <div class="card">
+                <h3><span style="font-size: 1.5em; vertical-align: middle;">⚡</span> Automação Neuro-WhatsApp</h3>
+                <p>Status: <span class="status-badge status-active">MODO PERSEGUIÇÃO ATIVO</span></p>
+                <p style="font-size: 0.85em; color: #888;">Terminal: **5524981532122**</p>
+                <textarea id="waMsg" rows="4">Percebemos que sua banca está estagnada. O sistema BET SOCIAL detectou um padrão de lucro para sua conta agora. Não deixe o governo levar o que é seu. Vamos recuperar?</textarea>
+                <button class="btn-action btn-whatsapp" onclick="sendCampaign('WA')">Disparar Gatilho de Urgência</button>
+            </div>
+
+            <div class="card">
+                <h3><span style="font-size: 1.5em; vertical-align: middle;">📩</span> Engine de E-mail Convincivo</h3>
+                <p>Status: <span style="color: var(--blue);">cyborgzero19@gmail.com</span></p>
+                <textarea id="mailMsg" rows="4">O segredo da liberdade financeira não é a sorte, é o método. O governo não quer que você use nossa tecnologia. Clique e mude sua realidade hoje.</textarea>
+                <button class="btn-action btn-email" onclick="sendCampaign('MAIL')">Injetar Sequência de Autoridade</button>
+            </div>
+
+            <div class="card" style="grid-column: span 2;">
+                <h3><span style="font-size: 1.5em; vertical-align: middle;">📊</span> Performance de Conversão em Tempo Real</h3>
+                <div style="display: flex; justify-content: space-around; text-align: center; margin-bottom: 20px;">
+                    <div>
+                        <div style="font-size: 2em; color: var(--success); font-family: 'Orbitron';">24.8%</div>
+                        <small>CONVERSÃO IA</small>
+                    </div>
+                    <div>
+                        <div style="font-size: 2em; color: var(--gold); font-family: 'Orbitron';">R$ 1.2M</div>
+                        <small>RECUPERADO/MÊS</small>
+                    </div>
+                    <div>
+                        <div style="font-size: 2em; color: var(--blue); font-family: 'Orbitron';">98%</div>
+                        <small>RETENÇÃO</small>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const KEY = "16146178721";
+
+        // Relógio de Precisão
+        setInterval(() => {
+            document.getElementById('realTimeClock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+
+        function unlockCRM() {
+            const pass = document.getElementById('crmPass').value;
+            if(pass === KEY) {
+                document.getElementById('crmGate').style.opacity = '0';
+                setTimeout(() => document.getElementById('crmGate').style.display = 'none', 500);
+                initChart();
+            } else {
+                alert("ACESSO NEGADO. TENTATIVA REGISTRADA NO TERMINAL.");
+            }
+        }
+
+        function sendCampaign(type) {
+            const msg = type === 'WA' ? document.getElementById('waMsg').value : document.getElementById('mailMsg').value;
+            // Simulando Inteligência de Envio
+            console.log(`[NEURAL ENGINE] Analisando propensão de clique...`);
+            console.log(`[DISPARO] ${type} Payload: ${msg}`);
+            
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "PROCESSANDO...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                alert(`ALGORITMO EXECUTADO: A mensagem de persuasão foi enviada. O cliente será impactado agora.`);
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Conversão de Clientes Retidos',
+                        data: [12, 19, 15, 25, 32, 45],
+                        borderColor: '#f3ba2f',
+                        backgroundColor: 'rgba(243, 186, 47, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: '#1a1d23' }, ticks: { color: '#666' } },
+                        x: { grid: { display: false }, ticks: { color: '#666' } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>TREASURY CONTROL | BET SOCIAL V4</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --gold: #f3ba2f; 
+            --bg: #040608; 
+            --card: #0d1117;
+            --safe: #00ff88; 
+            --liquid: #00d4ff; 
+            --border: #21262d;
+            --danger: #ff4d4d;
+        }
+
+        * { box-sizing: border-box; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        
+        body { 
+            background: var(--bg); 
+            color: #c9d1d9; 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 40px;
+            overflow-x: hidden;
+        }
+
+        /* Efeito de Profundidade no Fundo */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(243, 186, 47, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-vault { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 30px;
+            margin-bottom: 30px;
+        }
+
+        h1 { font-weight: 800; letter-spacing: -1px; color: #fff; margin: 0; }
+        p { color: #8b949e; margin: 5px 0 0 0; }
+        
+        .grid-treasury { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px; }
+        
+        .card-vault { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 20px; 
+            padding: 35px; 
+            position: relative; 
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+
+        .card-vault:hover { border-color: var(--gold); transform: translateY(-5px); }
+        
+        .card-vault h2 { 
+            color: var(--gold); 
+            margin-top: 0; 
+            font-size: 0.9em; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-vault h2::before {
+            content: ""; width: 8px; height: 8px; background: var(--gold); border-radius: 50%; display: inline-block;
+            box-shadow: 0 0 10px var(--gold);
+        }
+        
+        .big-number { 
+            font-size: 3.5em; 
+            font-weight: 800; 
+            margin: 20px 0; 
+            font-family: 'JetBrains Mono', monospace; 
+            color: #fff;
+            letter-spacing: -2px;
+        }
+
+        /* Progresso de Meta Estilizado */
+        .meta-container { margin: 25px 0; }
+        .meta-progress { height: 12px; background: #161b22; border-radius: 20px; position: relative; border: 1px solid var(--border); overflow: hidden; }
+        .meta-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #f3ba2f, #ffae00); 
+            width: 0%; /* Animado via JS */
+            border-radius: 20px; 
+            box-shadow: 0 0 20px rgba(243, 186, 47, 0.3);
+        }
+        
+        .indicator { display: flex; justify-content: space-between; font-size: 0.85em; color: #8b949e; margin-top: 12px; font-family: 'JetBrains Mono'; }
+
+        /* Botões de Comando */
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px; }
+        .btn-sync { 
+            background: var(--gold); color: #000; border: none; padding: 18px; border-radius: 12px; 
+            font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 0.8em;
+        }
+        .btn-sync:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--gold); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: #c9d1d9; }
+        .btn-outline:hover { background: var(--border); border-color: #8b949e; }
+        
+        .badge { padding: 6px 14px; border-radius: 100px; font-size: 0.75em; font-weight: 700; text-transform: uppercase; }
+        .badge-safe { background: rgba(0, 255, 136, 0.1); color: var(--safe); border: 1px solid rgba(0, 255, 136, 0.3); }
+
+        /* Tabela de Alocação Interna */
+        .allocation-table { width: 100%; margin-top: 20px; border-collapse: separate; border-spacing: 0 10px; }
+        .allocation-table tr { background: rgba(255,255,255,0.02); }
+        .allocation-table td { padding: 15px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .allocation-table td:first-child { border-left: 1px solid var(--border); border-radius: 10px 0 0 10px; }
+        .allocation-table td:last-child { border-right: 1px solid var(--border); border-radius: 0 10px 10px 0; text-align: right; font-family: 'JetBrains Mono'; }
+
+        /* Bloqueio de Segurança Biométrico/Código */
+        .vault-lock { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; 
+            backdrop-filter: blur(20px);
+        }
+        .lock-box { 
+            background: var(--card); border: 1px solid var(--gold); padding: 50px; border-radius: 30px; 
+            text-align: center; box-shadow: 0 0 100px rgba(243, 186, 47, 0.1); width: 400px;
+        }
+        .vault-lock input { 
+            padding: 20px; background: #000; border: 1px solid var(--border); color: var(--gold); 
+            text-align: center; width: 100%; border-radius: 15px; font-size: 1.5em; margin: 25px 0;
+            font-family: 'JetBrains Mono'; outline: none;
+        }
+        .vault-lock input:focus { border-color: var(--gold); }
+    </style>
+</head>
+<body>
+
+    <div id="vaultLock" class="vault-lock">
+        <div class="lock-box">
+            <div style="font-size: 40px; margin-bottom: 10px;">🔐</div>
+            <h1 style="color: var(--gold); font-size: 1.5em;">TREASURY ACCESS</h1>
+            <p>COMANDO SOBERANO: MAICON SANCHES</p>
+            <input type="password" id="vaultKey" placeholder="••••••••••" onkeypress="checkEnter(event)">
+            <button onclick="unlockVault()" class="btn-sync" style="width: 100%;">VALIDAR AUTORIDADE</button>
+        </div>
+    </div>
+
+    <div class="header-vault">
+        <div>
+            <h1>Controle de Tesouraria & Lastro</h1>
+            <p>Status da Reserva: <span style="color: var(--safe); font-weight: bold;">TOTALMENTE AUDITADO</span></p>
+        </div>
+        <div class="badge badge-safe">Protocolo: Offline/Cold Storage</div>
+    </div>
+
+    <div class="grid-treasury">
+        <div class="card-vault">
+            <h2>Reserva Estratégica (Cold)</h2>
+            <div class="big-number" id="profitVal">R$ 0,00</div>
+            <div class="meta-container">
+                <div class="meta-progress">
+                    <div class="meta-fill" id="metaBar"></div>
+                </div>
+                <div class="indicator">
+                    <span>OBJETIVO: R$ 5 BILHÕES</span>
+                    <span id="percText">0%</span>
+                </div>
+            </div>
+            <div style="background: rgba(243, 186, 47, 0.05); padding: 15px; border-radius: 10px; border-left: 4px solid var(--gold);">
+                <p style="font-size: 0.75em; color: var(--gold); margin: 0; font-weight: bold;">AVISO DE SEGURANÇA:</p>
+                <p style="font-size: 0.75em; margin: 5px 0 0 0;">Ativos movidos para carteira física (Ledger/Trezor). Fora do alcance de sistemas governamentais.</p>
+            </div>
+        </div>
+
+        <div class="card-vault">
+            <h2>Liquidez Operacional (Hot)</h2>
+            <div class="big-number" style="color: var(--liquid);" id="liquidVal">R$ 1.250.000</div>
+            <p>Fluxo de caixa imediato para pagamentos em <span style="color: #fff; font-weight: bold;">tempo real</span>.</p>
+            
+            <div class="btn-group">
+                <button class="btn-sync" onclick="syncWallets()">Sincronizar Nodes</button>
+                <button class="btn-sync btn-outline" onclick="adjustRatios()">Políticas Financeiras</button>
+            </div>
+            <p style="text-align: center; font-size: 0.7em; color: #555; margin-top: 15px; font-family: 'JetBrains Mono';">Uptime do Gateway: 99.998%</p>
+        </div>
+    </div>
+
+    <div class="card-vault" style="margin-top: 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Algoritmo de Alocação (Regra de Ouro)</h2>
+            <div class="badge" style="background: var(--safe); color: #000;">Motor IA Ativo</div>
+        </div>
+        <table class="allocation-table">
+            <tr>
+                <td><strong>Investimento em Infraestrutura (Cidades)</strong></td>
+                <td><span class="badge" style="background: rgba(0, 212, 255, 0.1); color: var(--liquid);">RESERVA</span></td>
+                <td>40% (R$ 250.160.000)</td>
+            </tr>
+            <tr>
+                <td><strong>Fundo de Reserva Emergencial</strong></td>
+                <td><span class="badge" style="background: rgba(243, 186, 47, 0.1); color: var(--gold);">PROTEÇÃO</span></td>
+                <td>40% (R$ 250.160.000)</td>
+            </tr>
+            <tr>
+                <td><strong>Custos Operacionais & Marketing</strong></td>
+                <td><span class="badge" style="background: rgba(255, 255, 255, 0.05); color: #fff;">OPS</span></td>
+                <td>20% (R$ 125.080.000)</td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        const MASTER_CODE = "16146178721";
+
+        function checkEnter(e) { if(e.key === 'Enter') unlockVault(); }
+
+        function unlockVault() {
+            const input = document.getElementById('vaultKey').value;
+            if(input === MASTER_CODE) {
+                document.getElementById('vaultLock').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('vaultLock').style.display = 'none';
+                    initCounter(); // Inicia animação financeira
+                }, 500);
+            } else {
+                alert("ACESSO AO TESOURO NEGADO. CHAVE INVÁLIDA.");
+            }
+        }
+
+        function initCounter() {
+            const target = 625400000; // Valor real
+            const duration = 2500;
+            const start = 0;
+            const increment = target / (duration / 16);
+            let current = 0;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if(current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                updateDisplay(current);
+            }, 16);
+        }
+
+        function updateDisplay(val) {
+            const goal = 5000000000;
+            const perc = (val / goal) * 100;
+            
+            document.getElementById('profitVal').innerText = val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('metaBar').style.width = perc + "%";
+            document.getElementById('percText').innerText = perc.toFixed(2) + "%";
+        }
+
+        function syncWallets() {
+            const btn = event.target;
+            btn.innerText = "CONECTANDO AOS NODES...";
+            btn.style.opacity = "0.7";
+            setTimeout(() => {
+                alert("NODES SINCRONIZADOS. NENHUMA DIVERGÊNCIA ENCONTRADA NAS CARTEIRAS FRIAS.");
+                btn.innerText = "SINCRONIZAR NODES";
+                btn.style.opacity = "1";
+            }, 2000);
+        }
+
+        function adjustRatios() {
+            const newRatio = prompt("Defina a nova % de Retenção de Lucro (0.1 a 1.0):");
+            if(newRatio) {
+                alert("POLÍTICA MONETÁRIA RECALIBRADA. ALOCAÇÃO AUTOMÁTICA ATUALIZADA.");
+            }
+        }
+    </script>
+</body>
+</html>

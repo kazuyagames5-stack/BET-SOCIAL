@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Maicon Sanches">
+    <title>PAYOUT MASTER v4.0 | COMMAND CENTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --money-green: #00ff88; 
+            --alert-orange: #f39c12; 
+            --danger-red: #ff4757;
+            --bg-dark: #05070a; 
+            --card-bg: #0f1218;
+            --border: #1e2329;
+            --white: #ffffff; 
+            --gold: #f3ba2f;
+        }
+
+        * { box-sizing: border-box; transition: all 0.25s ease; }
+
+        body { 
+            background: var(--bg-dark); 
+            color: var(--white); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Overlay de Segurança de Camada Zero */
+        .payout-lock { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: radial-gradient(circle, #0f1218 0%, #05070a 100%);
+            z-index: 10000; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            backdrop-filter: blur(20px);
+        }
+
+        .lock-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--money-green);
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0, 255, 136, 0.1);
+        }
+
+        .input-key { 
+            padding: 18px; 
+            background: #000; 
+            border: 1px solid #333; 
+            color: var(--money-green); 
+            text-align: center; 
+            border-radius: 6px; 
+            width: 300px; 
+            font-size: 22px;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+        }
+
+        /* Container Principal */
+        .payout-container { max-width: 1300px; margin: auto; padding: 40px; }
+        
+        .payout-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid var(--border); 
+            padding-bottom: 30px; 
+            margin-bottom: 40px; 
+        }
+
+        h1 { font-weight: 800; letter-spacing: -1px; margin: 0; }
+        .status-badge { background: rgba(0, 255, 136, 0.1); color: var(--money-green); padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+
+        /* Dashboard de Métricas */
+        .payout-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        
+        .stat-card { 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--money-green);
+        }
+
+        .stat-card h3 { font-size: 11px; color: #848e9c; text-transform: uppercase; margin: 0; letter-spacing: 1px; }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 2.2em; font-weight: bold; margin-top: 15px; color: #fff; }
+
+        /* Fila de Processamento */
+        .approval-queue { background: var(--card-bg); border-radius: 16px; padding: 30px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .queue-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .queue-table th { text-align: left; color: #848e9c; padding: 15px; font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+        .queue-table td { padding: 20px 15px; border-bottom: 1px solid var(--border); font-size: 14px; }
+        
+        .user-id { font-family: 'JetBrains Mono'; color: var(--gold); font-weight: bold; }
+        
+        /* Botões de Comando */
+        .btn-approve { background: var(--money-green); color: #000; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 12px; }
+        .btn-hold { background: transparent; color: var(--alert-orange); border: 1px solid var(--alert-orange); padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 800; font-size: 12px; margin-left: 8px; }
+        
+        .btn-approve:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3); }
+        .btn-hold:hover { background: var(--alert-orange); color: #000; }
+
+        /* Modo Emergência Ativado */
+        .emergency-active { filter: grayscale(1) sepia(1) hue-rotate(-50deg) !important; pointer-events: none; opacity: 0.6; }
+    </style>
+</head>
+<body id="mainBody">
+
+    <div id="payoutLock" class="payout-lock">
+        <div class="lock-box">
+            <div style="font-size: 40px; margin-bottom: 10px;">🔐</div>
+            <h1 style="color: var(--money-green); font-size: 24px;">FINANCIAL GATEWAY</h1>
+            <p style="color: #666; font-size: 13px; margin-bottom: 25px;">MAICON SANCHES - IDENTITY REQUIRED</p>
+            <input type="password" id="payoutKey" class="input-key" placeholder="AUTH CODE" onkeypress="handleKey(event)">
+            <br>
+            <button onclick="unlockPayout()" class="btn-approve" style="width: 300px; padding: 18px; font-size: 14px;">VALIDAR ACESSO MESTRE</button>
+        </div>
+    </div>
+
+    <div class="payout-container">
+        <header class="payout-header">
+            <div>
+                <h1>Fluxo de Saída <span class="status-badge">LIVE SINC</span></h1>
+                <p style="color: #848e9c; margin-top: 5px;">Monitorando gateways de pagamento ativos no Pilar 2.</p>
+            </div>
+            <div style="text-align: right;">
+                <button class="btn-hold" style="border-color: var(--danger-red); color: var(--danger-red); padding: 15px 25px;" onclick="emergencyStop()">
+                    🛑 TRAVAMENTO DE EMERGÊNCIA
+                </button>
+            </div>
+        </header>
+
+        <div class="payout-stats">
+            <div class="stat-card">
+                <h3>Liquidação (Hoje)</h3>
+                <div class="stat-value" id="valToday">R$ 142.580,00</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--alert-orange);">
+                <h3>Volume em Fila</h3>
+                <div class="stat-value" id="valPending" style="color: var(--alert-orange);">R$ 12.400,00</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--white);">
+                <h3>Latência de Gateway</h3>
+                <div class="stat-value" style="color: var(--money-green);">14ms</div>
+            </div>
+        </div>
+
+        <div class="approval-queue">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0;">Fila de Saques Críticos (> R$ 500)</h3>
+                <span style="font-size: 12px; color: #666;">Sincronizado com API de Pix Relâmpago</span>
+            </div>
+            
+            <table class="queue-table">
+                <thead>
+                    <tr>
+                        <th>REFERÊNCIA</th>
+                        <th>MÉTODO</th>
+                        <th>VALOR BRUTO</th>
+                        <th>CHAVE DESTINO</th>
+                        <th>ESTADO</th>
+                        <th>COMANDO</th>
+                    </tr>
+                </thead>
+                <tbody id="payoutList">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const AUTH_CODE = "16146178721";
+
+        function handleKey(e) { if(e.key === 'Enter') unlockPayout(); }
+
+        function unlockPayout() {
+            const input = document.getElementById('payoutKey').value;
+            if(input === AUTH_CODE) {
+                document.getElementById('payoutLock').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('payoutLock').style.display = 'none';
+                    renderQueue();
+                }, 400);
+            } else {
+                alert("ACESSO NEGADO. COORDENADAS REGISTRADAS.");
+            }
+        }
+
+        function renderQueue() {
+            const list = document.getElementById('payoutList');
+            const data = [
+                { id: "TXP-8821", method: "PIX_CPF", val: 2500, dest: "***.482.118-**" },
+                { id: "TXP-9042", method: "PIX_EMAIL", val: 1200, dest: "user***@gmail.com" },
+                { id: "TXP-4410", method: "PIX_KEY", val: 5400, dest: "00.123.456/0001-**" }
+            ];
+
+            list.innerHTML = data.map(item => `
+                <tr>
+                    <td class="user-id">${item.id}</td>
+                    <td><small>${item.method}</small></td>
+                    <td style="font-weight: bold; color: var(--money-green);">R$ ${item.val.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                    <td style="font-family: 'JetBrains Mono'; font-size: 12px;">${item.dest}</td>
+                    <td><span style="color: var(--alert-orange); font-size: 11px; font-weight: bold;">● AGUARDANDO MAICON</span></td>
+                    <td>
+                        <button class="btn-approve" onclick="approve('${item.id}', ${item.val})">LIBERAR</button>
+                        <button class="btn-hold" onclick="deny('${item.id}')">RETER</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function approve(id, val) {
+            if(confirm(`AUTORIZAR ENVIO IMEDIATO: R$ ${val} para ${id}?`)) {
+                alert(`Lote ${id} enviado para o processador de pagamentos.`);
+                // Integração com gateway real ocorreria aqui
+            }
+        }
+
+        function deny(id) {
+            const motivo = prompt(`Motivo da retenção do saque ${id}:`);
+            if(motivo) alert(`Saque ${id} bloqueado. Motivo: ${motivo}`);
+        }
+
+        function emergencyStop() {
+            const pass = prompt("CONFIRME A CHAVE MESTRE PARA O TRAVAMENTO TOTAL (KILL-SWITCH):");
+            if(pass === AUTH_CODE) {
+                document.getElementById('mainBody').classList.add('emergency-active');
+                alert("SISTEMA CONGELADO. Todos os protocolos de saída foram abortados.");
+            } else {
+                alert("Chave incorreta. Acesso de emergência negado.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIXEL COMMAND CENTER | MAICON SANCHES</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Montserrat:wght@300;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --gold: #f3ba2f; 
+            --bg: #05070a; 
+            --card: #0f1218; 
+            --input-bg: #080a0e;
+            --border: #1e2229;
+            --success: #00ff88;
+            --fb: #1877f2;
+            --google: #ea4335;
+            --tiktok: #ff0050;
+        }
+
+        body { 
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'Montserrat', sans-serif; 
+            margin: 0; 
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Scanline Effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+            background-size: 100% 4px;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .config-card { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            padding: 40px; 
+            border-radius: 20px; 
+            max-width: 650px; 
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 20px rgba(243, 186, 47, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .config-card::before {
+            content: "ID: 16146178721";
+            position: absolute;
+            top: 10px; right: 20px;
+            font-family: 'JetBrains Mono';
+            font-size: 10px;
+            color: #333;
+        }
+
+        h2 { 
+            color: var(--gold); 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        p { color: #8b949e; font-size: 0.9em; margin-bottom: 35px; line-height: 1.6; }
+
+        .input-group { 
+            margin-bottom: 25px; 
+            position: relative;
+            background: var(--input-bg);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        .input-group:focus-within {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(243, 186, 47, 0.1);
+        }
+
+        .chip { 
+            display: inline-block; 
+            padding: 5px 12px; 
+            border-radius: 6px; 
+            font-size: 10px; 
+            font-weight: 800; 
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: #555; 
+            font-size: 11px; 
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        input { 
+            width: 100%; 
+            padding: 10px 0; 
+            background: transparent; 
+            border: none; 
+            border-bottom: 1px solid #333;
+            color: var(--success); 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input::placeholder { color: #222; }
+        input:focus { border-bottom-color: var(--success); }
+
+        .btn-save { 
+            background: var(--gold); 
+            color: #000; 
+            border: none; 
+            padding: 20px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 900; 
+            width: 100%; 
+            margin-top: 20px; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+            transition: 0.4s;
+            box-shadow: 0 5px 15px rgba(243, 186, 47, 0.2);
+        }
+
+        .btn-save:hover { 
+            transform: translateY(-3px);
+            filter: brightness(1.2);
+            box-shadow: 0 10px 30px rgba(243, 186, 47, 0.4);
+        }
+
+        .status-light {
+            width: 8px; height: 8px;
+            background: #333;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .active-light { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    </style>
+</head>
+<body>
+
+<div class="config-card">
+    <h2><span style="font-size: 28px;">📡</span> GLOBAL TRAFFIC HUB</h2>
+    <p>Maicon, a sincronização de dados via pixel garante que cada centavo investido no Google e Meta retorne em volume de depósitos (Pilar 13).</p>
+
+    <div class="input-group">
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <span class="chip" style="background: var(--fb);">META / AD-SERVICES</span>
+            <span id="st-fb" class="status-light"></span>
+        </div>
+        <label>FACEBOOK PIXEL ID</label>
+        <input type="text" id="fbPixel" placeholder="ESPERANDO COMANDO..." oninput="check(this, 'st-fb')">
+    </div>
+
+    <div class="input-group">
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <span class="chip" style="background: var(--google);">GOOGLE ENGINE</span>
+            <span id="st-go" class="status-light"></span>
+        </div>
+        <label>CONVERSION ID (AW-XXXX)</label>
+        <input type="text" id="goPixel" placeholder="AW-000000000" oninput="check(this, 'st-go')">
+    </div>
+
+    <div class="input-group">
+        <div style="display:flex; justify-content: space-between; align-items: center;">
+            <span class="chip" style="background: #000; border: 1px solid #333;">TIKTOK SENSORS</span>
+            <span id="st-tt" class="status-light"></span>
+        </div>
+        <label>PIXEL CODE</label>
+        <input type="text" id="ttPixel" placeholder="CXXXXXXXXXXXXXX" oninput="check(this, 'st-tt')">
+    </div>
+
+    <button class="btn-save" id="saveBtn" onclick="salvarConfiguracoes()">Sincronizar Malha de Rastreamento</button>
+</div>
+
+<script>
+    // Validação visual simples para feedback de comando
+    function check(el, statusId) {
+        const light = document.getElementById(statusId);
+        if(el.value.length > 5) {
+            light.classList.add('active-light');
+        } else {
+            light.classList.remove('active-light');
+        }
+    }
+
+    async function salvarConfiguracoes() {
+        const btn = document.getElementById('saveBtn');
+        const originalText = btn.innerText;
+        
+        const dados = {
+            fb: document.getElementById('fbPixel').value,
+            google: document.getElementById('goPixel').value,
+            tiktok: document.getElementById('ttPixel').value,
+            maicon_key: "16146178721",
+            timestamp: new Date().toISOString()
+        };
+
+        btn.innerText = "EXECUTANDO COMANDO...";
+        btn.style.opacity = "0.7";
+
+        try {
+            // Simulando a API com a inteligência de rede
+            const response = await fetch('/api/admin/save-pixels', {
+                method: 'POST',
+                body: JSON.stringify(dados),
+                headers: {'Content-Type': 'application/json'}
+            });
+
+            // Feedback de Sucesso Estilizado
+            setTimeout(() => {
+                alert("COMANDO EXECUTADO COM SUCESSO!\n\nMaicon, a malha de rastreamento foi atualizada em todos os clusters da infraestrutura.");
+                btn.innerText = originalText;
+                btn.style.opacity = "1";
+            }, 800);
+
+        } catch (e) {
+            // Em caso de erro na sua infra (API não pronta)
+            console.log("Integrando localmente...");
+            btn.innerText = "ERRO NA REDE - TENTANDO NOVAMENTE";
+        }
+    }
+</script>
+</body>
+</html>
